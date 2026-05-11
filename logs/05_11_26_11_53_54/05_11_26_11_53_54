@@ -1,0 +1,5 @@
+[ 2026-05-11 11:53:54,573 ] 12 root - INFO - ==================== data ingestion log started ====================
+[ 2026-05-11 11:53:54,573 ] 27 root - INFO - downloading data from https://files.grouplens.org/datasets/movielens/ml-latest-small.zip to raw_data\ml-latest-small.zip
+[ 2026-05-11 11:54:00,851 ] 34 root - INFO - download completed
+[ 2026-05-11 11:54:00,882 ] 51 root - INFO - extracted data from raw_data\ml-latest-small.zip to ingested
+[ 2026-05-11 11:54:00,882 ] 59 root - INFO - ==================== data ingestion log completed ====================
