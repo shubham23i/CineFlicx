@@ -1,0 +1,11 @@
+[ 2026-05-11 13:47:00,838 ] 12 root - INFO - ==================== data ingestion log started ====================
+[ 2026-05-11 13:47:00,838 ] 27 root - INFO - downloading data from https://files.grouplens.org/datasets/movielens/ml-latest-small.zip to artifacts\raw_data\ml-latest-small.zip
+[ 2026-05-11 13:47:03,551 ] 34 root - INFO - download completed
+[ 2026-05-11 13:47:03,583 ] 51 root - INFO - extracted data from artifacts\raw_data\ml-latest-small.zip to artifacts\ingested
+[ 2026-05-11 13:47:03,583 ] 59 root - INFO - ==================== data ingestion log completed ====================
+[ 2026-05-11 13:47:03,590 ] 26 root - INFO - Starting data transformation
+[ 2026-05-11 13:47:03,676 ] 44 root - INFO - Data loaded successfully
+[ 2026-05-11 13:47:03,676 ] 82 root - INFO - Column names converted
+[ 2026-05-11 13:47:03,688 ] 99 root - INFO - Nulls and duplicates handled
+[ 2026-05-11 13:47:03,829 ] 146 root - INFO - Transformed files saved successfully
+[ 2026-05-11 13:47:03,829 ] 23 root - INFO - Starting Data Validation Stage

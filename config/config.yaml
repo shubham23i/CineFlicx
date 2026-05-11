@@ -6,3 +6,27 @@ data_ingestion_config:
   dataset_directory: dataset
   ingested_directory: ingested
   raw_data_directory: raw_data
+
+
+data_transformation_config:
+  transformed_data_directory: transformed_data
+  ratings_csv_file_name: ratings.csv
+  movies_csv_file_name: movies.csv
+  links_csv_file_name: links.csv
+  tags_csv_file_name: tags.csv
+
+data_validation_config:
+  validated_directory: validated_data
+  min_user_ratings_threshold: 50
+  min_movie_ratings_threshold: 20
+
+data_validation_config:
+  validated_directory: validated_data
+  min_user_ratings_threshold: 50
+  min_movie_ratings_threshold: 20
+
+file_names:
+  ratings_file: clean_ratings.csv
+  movies_file: clean_movies.csv
+  links_file: clean_links.csv
+  tags_file: clean_tags.csv
