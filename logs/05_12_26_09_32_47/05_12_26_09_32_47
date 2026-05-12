@@ -1,0 +1,46 @@
+[ 2026-05-12 09:32:50,567 ] 12 root - INFO - ==================== data ingestion log started ====================
+[ 2026-05-12 09:32:50,568 ] 27 root - INFO - downloading data from https://files.grouplens.org/datasets/movielens/ml-latest-small.zip to artifacts\raw_data\ml-latest-small.zip
+[ 2026-05-12 09:32:54,358 ] 34 root - INFO - download completed
+[ 2026-05-12 09:32:54,395 ] 51 root - INFO - extracted data from artifacts\raw_data\ml-latest-small.zip to artifacts\ingested
+[ 2026-05-12 09:32:54,395 ] 59 root - INFO - ==================== data ingestion log completed ====================
+[ 2026-05-12 09:32:54,400 ] 30 root - INFO - Starting Data Validation
+[ 2026-05-12 09:32:54,543 ] 61 root - INFO - Files loaded successfully
+[ 2026-05-12 09:32:54,546 ] 67 root - INFO - Ratings null values:
+userId       0
+movieId      0
+rating       0
+timestamp    0
+dtype: int64
+[ 2026-05-12 09:32:54,548 ] 71 root - INFO - Movies null values:
+movieId    0
+title      0
+genres     0
+dtype: int64
+[ 2026-05-12 09:32:54,549 ] 75 root - INFO - Links null values:
+movieId    0
+imdbId     0
+tmdbId     8
+dtype: int64
+[ 2026-05-12 09:32:54,549 ] 79 root - INFO - Tags null values:
+userId       0
+movieId      0
+tag          0
+timestamp    0
+dtype: int64
+[ 2026-05-12 09:32:54,553 ] 92 root - INFO - Null values removed
+[ 2026-05-12 09:32:54,564 ] 98 root - INFO - Ratings duplicates: 0
+[ 2026-05-12 09:32:54,581 ] 102 root - INFO - Movies duplicates: 0
+[ 2026-05-12 09:32:54,582 ] 106 root - INFO - Links duplicates: 0
+[ 2026-05-12 09:32:54,584 ] 110 root - INFO - Tags duplicates: 0
+[ 2026-05-12 09:32:54,608 ] 123 root - INFO - Duplicates removed
+[ 2026-05-12 09:32:54,778 ] 170 root - INFO - Clean validated files saved successfully
+[ 2026-05-12 09:32:54,779 ] 31 root - INFO - ==================== Data Transformation Started ====================
+[ 2026-05-12 09:32:54,881 ] 71 root - INFO - Validated files loaded successfully
+[ 2026-05-12 09:32:54,882 ] 109 root - INFO - Column names converted to lowercase
+[ 2026-05-12 09:32:54,888 ] 129 root - INFO - Metadata dataframe created
+[ 2026-05-12 09:32:54,895 ] 149 root - INFO - Combined features created
+[ 2026-05-12 09:32:54,900 ] 166 root - INFO - Active users filtered
+[ 2026-05-12 09:32:54,907 ] 185 root - INFO - Popular movies filtered
+[ 2026-05-12 09:32:54,933 ] 197 root - INFO - Movie pivot created
+[ 2026-05-12 09:32:55,250 ] 235 root - INFO - All transformed artifacts saved successfully
+[ 2026-05-12 09:32:55,250 ] 239 root - INFO - ==================== Data Transformation Completed ====================

@@ -1,32 +1,48 @@
 artifacts_config:
   artifacts_directory: artifacts
 
-data_ingestion_config:  
+
+data_ingestion_config:
   dataset_download_url: https://files.grouplens.org/datasets/movielens/ml-latest-small.zip
   dataset_directory: dataset
   ingested_directory: ingested
   raw_data_directory: raw_data
 
 
+data_validation_config:
+  validated_directory: validated_data
+
+
 data_transformation_config:
   transformed_data_directory: transformed_data
-  ratings_csv_file_name: ratings.csv
-  movies_csv_file_name: movies.csv
-  links_csv_file_name: links.csv
-  tags_csv_file_name: tags.csv
-
-data_validation_config:
-  validated_directory: validated_data
   min_user_ratings_threshold: 50
   min_movie_ratings_threshold: 20
 
-data_validation_config:
-  validated_directory: validated_data
-  min_user_ratings_threshold: 50
-  min_movie_ratings_threshold: 20
 
 file_names:
   ratings_file: clean_ratings.csv
   movies_file: clean_movies.csv
   links_file: clean_links.csv
   tags_file: clean_tags.csv
+
+prediction_pipeline_config:
+  model_name: all-MiniLM-L6-v2
+
+
+file_names:
+  ratings_file: clean_ratings.csv
+  movies_file: clean_movies.csv
+  links_file: clean_links.csv
+  tags_file: clean_tags.csv
+
+
+artifact_files:
+  metadata_file: metadata.pkl
+  movie_pivot_file: movie_pivot.pkl
+  similarity_file: similarity.pkl
+  title_to_movieid_file: title_to_movieid.pkl
+  movieid_to_title_file: movieid_to_title.pkl
+  embeddings_file: embeddings.npy
+  faiss_index_file: faiss.index
+
+

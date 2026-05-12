@@ -42,6 +42,7 @@ list_of_files = [
     f"src/{project_name}/components/data_ingestion.py",
     f"src/{project_name}/components/data_validation.py",
     f"src/{project_name}/components/data_transformation.py",
+    f"src/{project_name}/components/Prediction.py",
     f"src/{project_name}/components/embedding_generator.py",
     f"src/{project_name}/components/faiss_index_builder.py",
     f"src/{project_name}/components/recommender.py",

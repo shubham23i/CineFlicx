@@ -1,0 +1,89 @@
+[ 2026-05-12 09:44:02,156 ] 120 faiss.loader - INFO - Loading faiss with AVX512 support.
+[ 2026-05-12 09:44:02,157 ] 125 faiss.loader - INFO - Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+[ 2026-05-12 09:44:02,157 ] 132 faiss.loader - INFO - Loading faiss with AVX2 support.
+[ 2026-05-12 09:44:02,443 ] 134 faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+[ 2026-05-12 09:44:15,927 ] 12 root - INFO - ==================== data ingestion log started ====================
+[ 2026-05-12 09:44:15,927 ] 27 root - INFO - downloading data from https://files.grouplens.org/datasets/movielens/ml-latest-small.zip to artifacts\raw_data\ml-latest-small.zip
+[ 2026-05-12 09:44:18,867 ] 34 root - INFO - download completed
+[ 2026-05-12 09:44:18,898 ] 51 root - INFO - extracted data from artifacts\raw_data\ml-latest-small.zip to artifacts\ingested
+[ 2026-05-12 09:44:18,898 ] 59 root - INFO - ==================== data ingestion log completed ====================
+[ 2026-05-12 09:44:18,898 ] 30 root - INFO - Starting Data Validation
+[ 2026-05-12 09:44:18,997 ] 61 root - INFO - Files loaded successfully
+[ 2026-05-12 09:44:18,997 ] 67 root - INFO - Ratings null values:
+userId       0
+movieId      0
+rating       0
+timestamp    0
+dtype: int64
+[ 2026-05-12 09:44:18,997 ] 71 root - INFO - Movies null values:
+movieId    0
+title      0
+genres     0
+dtype: int64
+[ 2026-05-12 09:44:18,997 ] 75 root - INFO - Links null values:
+movieId    0
+imdbId     0
+tmdbId     8
+dtype: int64
+[ 2026-05-12 09:44:18,997 ] 79 root - INFO - Tags null values:
+userId       0
+movieId      0
+tag          0
+timestamp    0
+dtype: int64
+[ 2026-05-12 09:44:18,997 ] 92 root - INFO - Null values removed
+[ 2026-05-12 09:44:19,022 ] 98 root - INFO - Ratings duplicates: 0
+[ 2026-05-12 09:44:19,025 ] 102 root - INFO - Movies duplicates: 0
+[ 2026-05-12 09:44:19,026 ] 106 root - INFO - Links duplicates: 0
+[ 2026-05-12 09:44:19,027 ] 110 root - INFO - Tags duplicates: 0
+[ 2026-05-12 09:44:19,031 ] 123 root - INFO - Duplicates removed
+[ 2026-05-12 09:44:19,191 ] 170 root - INFO - Clean validated files saved successfully
+[ 2026-05-12 09:44:19,206 ] 55 root - INFO - ==================== Data Transformation Started ====================
+[ 2026-05-12 09:44:19,292 ] 95 root - INFO - Validated files loaded successfully
+[ 2026-05-12 09:44:19,292 ] 135 root - INFO - Columns renamed successfully
+[ 2026-05-12 09:44:19,303 ] 157 root - INFO - Metadata dataframe created
+[ 2026-05-12 09:44:19,303 ] 187 root - INFO - Movie mappings created
+[ 2026-05-12 09:44:19,319 ] 201 root - INFO - Combined features created
+[ 2026-05-12 09:44:19,319 ] 223 root - INFO - Active users filtered
+[ 2026-05-12 09:44:19,319 ] 247 root - INFO - Popular movies filtered
+[ 2026-05-12 09:44:19,335 ] 261 root - INFO - Movie pivot created
+[ 2026-05-12 09:44:19,362 ] 273 root - INFO - Cosine similarity matrix created
+[ 2026-05-12 09:44:19,364 ] 177 sentence_transformers.base.model - INFO - No device provided, using cpu
+[ 2026-05-12 09:44:19,885 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:20,159 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/modules.json "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:20,430 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:20,682 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config_sentence_transformers.json "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:20,698 ] 973 sentence_transformers.base.model - INFO - Loading SentenceTransformer model from sentence-transformers/all-MiniLM-L6-v2.
+[ 2026-05-12 09:44:20,950 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:20,998 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config_sentence_transformers.json "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:21,273 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:21,799 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/README.md "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:22,093 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:22,153 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/modules.json "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:22,427 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:22,677 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/sentence_bert_config.json "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:22,949 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+[ 2026-05-12 09:44:23,237 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:23,499 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config.json "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:23,899 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+[ 2026-05-12 09:44:24,164 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+[ 2026-05-12 09:44:24,430 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+[ 2026-05-12 09:44:24,692 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+[ 2026-05-12 09:44:25,010 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:25,262 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/tokenizer_config.json "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:25,590 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:25,631 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config.json "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:25,914 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:25,926 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/config.json "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:26,199 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:26,239 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/tokenizer_config.json "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:26,504 ] 1025 httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+[ 2026-05-12 09:44:26,755 ] 1025 httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:27,087 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+[ 2026-05-12 09:44:27,363 ] 1025 httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-MiniLM-L6-v2/c9745ed1d9f207416be6d2e6f8de32d1f16199bf/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+[ 2026-05-12 09:44:27,630 ] 1025 httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2 "HTTP/1.1 200 OK"
+[ 2026-05-12 09:45:14,914 ] 295 root - INFO - Sentence embeddings created
+[ 2026-05-12 09:45:14,924 ] 313 root - INFO - FAISS index created
+[ 2026-05-12 09:45:15,025 ] 398 root - INFO - All transformation artifacts saved successfully
+[ 2026-05-12 09:45:15,026 ] 402 root - INFO - ==================== Data Transformation Completed ====================
