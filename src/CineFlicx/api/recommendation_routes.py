@@ -4,12 +4,73 @@ from src.CineFlicx.pipelines.prediction_pipeline import (
     PredictionPipeline
 )
 
+from src.CineFlicx.components.tmdb_fetcher import (
+    TMDBFetcher
+)
+
 recommendation_router = APIRouter(
     prefix="/recommendation",
     tags=["Recommendation"]
 )
 
-prediction_pipeline = PredictionPipeline()
+# =====================================================
+# ENRICH MOVIE DATA
+# =====================================================
+
+def enrich_movies(movie_list):
+
+    tmdb = TMDBFetcher()
+
+    enriched = []
+
+    for movie in movie_list:
+
+        try:
+
+            tmdbid = int(movie["tmdbid"])
+
+            details = (
+                tmdb.get_movie_details(tmdbid)
+            )
+
+            enriched.append({
+
+                "movieid":
+                movie["movieid"],
+
+                "title":
+                movie["title"],
+
+                "genres":
+                movie["genres"],
+
+                "tmdbid":
+                tmdbid,
+
+                "imdbid":
+                movie["imdbid"],
+
+                "overview":
+                details.get("overview"),
+
+                "poster":
+                details.get("poster"),
+
+                "backdrop":
+                details.get("backdrop"),
+
+                "rating":
+                details.get("rating"),
+
+                "release_date":
+                details.get("release_date")
+            })
+
+        except:
+
+            enriched.append(movie)
+
+    return enriched
 
 # =====================================================
 # COLLABORATIVE RECOMMENDATION
@@ -23,6 +84,8 @@ def recommend_movies(
     top_k: int = 10
 ):
 
+    prediction_pipeline = PredictionPipeline()
+
     results = (
         prediction_pipeline
         .collaborative_pipeline(
@@ -31,9 +94,17 @@ def recommend_movies(
         )
     )
 
+    enriched_results = (
+        enrich_movies(results)
+    )
+
     return {
-        "movie": movie_name,
-        "recommendations": results
+
+        "movie":
+        movie_name,
+
+        "recommendations":
+        enriched_results
     }
 
 # =====================================================
@@ -48,6 +119,8 @@ def semantic_search(
     top_k: int = 10
 ):
 
+    prediction_pipeline = PredictionPipeline()
+
     results = (
         prediction_pipeline
         .semantic_pipeline(
@@ -56,9 +129,17 @@ def semantic_search(
         )
     )
 
+    enriched_results = (
+        enrich_movies(results)
+    )
+
     return {
-        "query": query,
-        "results": results
+
+        "query":
+        query,
+
+        "results":
+        enriched_results
     }
 
 # =====================================================
@@ -74,6 +155,8 @@ def hybrid_recommendation(
     top_k: int = 10
 ):
 
+    prediction_pipeline = PredictionPipeline()
+
     results = (
         prediction_pipeline
         .hybrid_pipeline(
@@ -83,8 +166,18 @@ def hybrid_recommendation(
         )
     )
 
+    enriched_results = (
+        enrich_movies(results)
+    )
+
     return {
-        "movie": movie_name,
-        "query": query,
-        "recommendations": results
+
+        "movie":
+        movie_name,
+
+        "query":
+        query,
+
+        "recommendations":
+        enriched_results
     }
