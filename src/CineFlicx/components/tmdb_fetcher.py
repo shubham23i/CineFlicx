@@ -27,59 +27,64 @@ class TMDBFetcher:
     # GET MOVIE DETAILS
     # =====================================================
 
-    def get_movie_details(self, tmdbid):
+    def get_movie_details(
+        self,
+        tmdbid
+    ):
 
-        try:
+        url = (
+            f"{self.base_url}/movie/{tmdbid}"
+        )
 
-            url = (
-                f"{self.base_url}/movie/{tmdbid}"
+        params = {
+
+            "api_key": self.api_key
+        }
+
+        response = requests.get(
+            url,
+            params=params
+        )
+
+        data = response.json()
+
+        poster = None
+        backdrop = None
+
+        if data.get("poster_path"):
+
+            poster = (
+                self.image_base_url
+                + data["poster_path"]
             )
 
-            params = {
-                "api_key": self.api_key
-            }
+        if data.get("backdrop_path"):
 
-            response = requests.get(
-                url,
-                params=params
+            backdrop = (
+                self.image_base_url
+                + data["backdrop_path"]
             )
 
-            data = response.json()
+        return {
 
-            return {
+            "overview":
+            data.get("overview"),
 
-                "title":
-                data.get("title"),
+            "poster":
+            poster,
 
-                "overview":
-                data.get("overview"),
+            "backdrop":
+            backdrop,
 
-                "poster":
-                self.image_base_url +
-                data.get("poster_path", ""),
+            "runtime":
+            data.get("runtime"),
 
-                "backdrop":
-                self.image_base_url +
-                data.get("backdrop_path", ""),
+            "rating":
+            data.get("vote_average"),
 
-                "release_date":
-                data.get("release_date"),
-
-                "rating":
-                data.get("vote_average"),
-
-                "runtime":
-                data.get("runtime"),
-
-                "genres":
-                data.get("genres")
-            }
-
-        except Exception as e:
-
-            return {
-                "error": str(e)
-            }
+            "release_date":
+            data.get("release_date")
+        }
 
     # =====================================================
     # GET MOVIE CAST

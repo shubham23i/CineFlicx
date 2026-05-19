@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- DIRECTOR INFO -->
+
+<div class="mb-12">
+
+    <div class="flex gap-8 items-center">
+
+        <!-- PROFILE IMAGE -->
+
+        {% if director.profile %}
+
+        <img
+            src="{{ director.profile }}"
+            class="w-48 rounded-2xl shadow-2xl"
+        >
+
+        {% endif %}
+
+        <!-- DETAILS -->
+
+        <div>
+
+            <h1 class="text-5xl font-bold mb-4">
+
+                {{ director.name }}
+
+            </h1>
+
+            <p class="text-zinc-400 text-xl">
+
+                Director
+            </p>
+
+            {% if director.popularity %}
+
+            <p class="mt-4">
+
+                Popularity Score:
+                {{ director.popularity }}
+
+            </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MOVIES -->
+
+<h2 class="text-3xl font-bold mb-6">
+
+    Directed Movies
+
+</h2>
+
+<div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+
+    {% for movie in movies %}
+
+    <a href="/movie/{{ movie.movieid }}">
+
+        <div
+            class="bg-zinc-900 rounded-2xl overflow-hidden hover:scale-105 transition duration-300"
+        >
+
+            <!-- POSTER -->
+
+            <img
+                src="{{ movie.poster }}"
+                class="h-80 w-full object-cover"
+            >
+
+            <!-- DETAILS -->
+
+            <div class="p-4">
+
+                <h3 class="font-bold text-lg mb-2">
+
+                    {{ movie.title }}
+
+                </h3>
+
+                <p class="text-yellow-400">
+
+                    ⭐ {{ movie.rating }}
+                </p>
+
+                <p class="text-zinc-500 text-sm">
+
+                    {{ movie.release_date }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </a>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,56 +1,48 @@
 from fastapi import FastAPI
-from src.CineFlicx.components.tmdb_fetcher import TMDBFetcher
-from src.CineFlicx.api.recommendation_routes import (
-    recommendation_router
-)
+from fastapi.staticfiles import StaticFiles
 
 from src.CineFlicx.api.movie_routes import (
     movie_router
+)
+
+from src.CineFlicx.api.recommendation_routes import (
+    recommendation_router
 )
 
 from src.CineFlicx.api.actor_routes import (
     actor_router
 )
 
-from src.CineFlicx.api.director_routes import (
-    director_router
+from src.CineFlicx.api.frontend_routes import (
+    frontend_router
 )
 
 app = FastAPI(
-    title="CineFlicx API",
-    version="1.0"
+    title="CineFlicx"
 )
 
 # =====================================================
-# INCLUDE ROUTERS
+# STATIC FILES
 # =====================================================
 
-app.include_router(
-    recommendation_router
-)
-
-app.include_router(
-    movie_router
-)
-
-app.include_router(
-    actor_router
-)
-
-app.include_router(
-    director_router
+app.mount(
+    "/static",
+    StaticFiles(directory="frontend/static"),
+    name="static"
 )
 
 # =====================================================
-# HOME ROUTE
+# FRONTEND ROUTES
 # =====================================================
 
-@app.get("/")
-def home():
+app.include_router(frontend_router)
 
-    return {
+# =====================================================
+# API ROUTES
+# =====================================================
 
-        "message":
-        "Welcome to CineFlicx API"
-    }
+app.include_router(movie_router)
 
+app.include_router(recommendation_router)
+
+app.include_router(actor_router)

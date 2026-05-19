@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>CineFlicx</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet"
+          href="/static/css/style.css">
+
+</head>
+
+<body class="bg-black text-white">
+
+    <!-- NAVBAR -->
+
+    <nav class="bg-zinc-900 p-4">
+
+        <div class="container mx-auto flex justify-between">
+
+            <h1 class="text-3xl font-bold text-red-500">
+
+                CineFlicx
+
+            </h1>
+
+            <a href="/"
+               class="hover:text-red-400">
+
+               Home
+
+            </a>
+
+        </div>
+
+    </nav>
+
+    <!-- CONTENT -->
+
+    <main class="container mx-auto p-6">
+
+        {% block content %}
+
+        {% endblock %}
+
+    </main>
+
+    <script src="/static/js/main.js"></script>
+
+</body>
+
+</html>

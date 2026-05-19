@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Search Results - CineFlicx</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-black text-white min-h-screen">
+
+    <!-- ====================================== -->
+    <!-- NAVBAR -->
+    <!-- ====================================== -->
+
+    <nav class="flex items-center justify-between px-10 py-6 border-b border-gray-800">
+
+        <a
+            href="/"
+            class="text-4xl font-extrabold text-red-500"
+        >
+            CineFlicx
+        </a>
+
+        <a
+            href="/"
+            class="text-gray-300 hover:text-red-400"
+        >
+            Home
+        </a>
+
+    </nav>
+
+    <!-- ====================================== -->
+    <!-- HEADER -->
+    <!-- ====================================== -->
+
+    <section class="px-10 py-10">
+
+        <h1 class="text-5xl font-bold mb-4">
+
+            Results for:
+            <span class="text-red-500">
+                {{ query }}
+            </span>
+
+        </h1>
+
+        <p class="text-gray-400 text-lg">
+
+            AI-powered movie recommendations
+
+        </p>
+
+    </section>
+
+    <!-- ====================================== -->
+    <!-- MOVIE GRID -->
+    <!-- ====================================== -->
+
+    <section class="px-10 pb-20">
+
+        {% if movies %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+
+            {% for movie in movies %}
+
+            <a
+                href="/movie/{{ movie['movieid'] }}"
+                class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:scale-105 transition duration-300"
+            >
+
+                <!-- POSTER -->
+
+                {% if movie['poster'] %}
+
+                <img
+                    src="{{ movie['poster'] }}"
+                    alt="{{ movie['title'] }}"
+                    class="w-full h-[420px] object-cover"
+                >
+
+                {% else %}
+
+                <div class="w-full h-[420px] bg-gray-800 flex items-center justify-center">
+
+                    <span class="text-gray-500">
+                        No Image
+                    </span>
+
+                </div>
+
+                {% endif %}
+
+                <!-- CONTENT -->
+
+                <div class="p-4">
+
+                    <h2 class="text-lg font-bold mb-2">
+
+                        {{ movie['title'] }}
+
+                    </h2>
+
+                    <p class="text-sm text-gray-400 mb-3 line-clamp-2">
+
+                        {{ movie['genres'] }}
+
+                    </p>
+
+                    <div class="flex items-center justify-between">
+
+                        <span class="text-yellow-400">
+
+                            ⭐ {{ movie['rating'] }}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+            {% endfor %}
+        </div>
+
+        {% else %}
+
+        <!-- NO RESULTS -->
+
+        <div class="flex flex-col items-center justify-center py-20">
+
+            <h2 class="text-3xl font-bold mb-4">
+
+                No recommendations found
+
+            </h2>
+
+            <p class="text-gray-400">
+
+                Try another movie name
+
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+</body>
+
+</html>

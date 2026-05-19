@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="mb-10">
+
+    <div class="flex gap-8 items-center">
+
+        <!-- ACTOR IMAGE -->
+
+        <img
+            src="{{ actor.profile }}"
+            class="w-48 rounded-2xl shadow-2xl"
+        >
+
+        <!-- ACTOR INFO -->
+
+        <div>
+
+            <h1 class="text-5xl font-bold mb-4">
+
+                {{ actor.name }}
+
+            </h1>
+
+            <p class="text-zinc-400 text-xl">
+
+                {{ actor.known_for_department }}
+
+            </p>
+
+            <p class="mt-4">
+
+                Popularity Score:
+                {{ actor.popularity }}
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MOVIES -->
+
+<h2 class="text-3xl font-bold mb-6">
+
+    Movies
+
+</h2>
+
+<div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+
+    {% for movie in movies %}
+
+    <a href="#">
+
+        <div
+            class="bg-zinc-900 rounded-2xl overflow-hidden hover:scale-105 transition"
+        >
+
+            <img
+                src="{{ movie.poster }}"
+                class="h-80 w-full object-cover"
+            >
+
+            <div class="p-4">
+
+                <h3 class="font-bold">
+
+                    {{ movie.title }}
+
+                </h3>
+
+                <p class="text-zinc-400 text-sm">
+
+                    ⭐ {{ movie.rating }}
+
+                </p>
+
+                <p class="text-zinc-500 text-sm">
+
+                    {{ movie.release_date }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </a>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -204,16 +204,22 @@ class MovieRecommender:
 
         try:
 
-            if movie_title not in self.title_to_movieid:
+            matched_title = None
 
-                return {
-                    "error": "Movie not found"
-                }
+            for title in self.title_to_movieid.keys():
+
+                if movie_title.lower() in title.lower():
+
+                    matched_title = title
+                    break
+
+            if matched_title is None:
+
+                return []
 
             movieid = (
-                self.title_to_movieid[movie_title]
+                self.title_to_movieid[matched_title]
             )
-
             if movieid not in self.movie_pivot.index:
 
                 return {

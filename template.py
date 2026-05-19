@@ -89,6 +89,7 @@ list_of_files = [
     f"src/{project_name}/api/actor_routes.py",
     f"src/{project_name}/api/director_routes.py",
     f"src/{project_name}/api/recommendation_routes.py",
+    f"src/{project_name}/api/frontend_routes.py",
 
     "tests/__init__.py",
     "tests/test_api.py",
