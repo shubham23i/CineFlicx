@@ -3,6 +3,9 @@ import requests
 
 from dotenv import load_dotenv
 
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
 
 load_dotenv()
 
@@ -11,80 +14,96 @@ class TMDBFetcher:
 
     def __init__(self):
 
-        self.api_key = os.getenv(
-            "TMDB_API_KEY"
+        self.api_key = os.getenv("TMDB_API_KEY")
+
+        self.base_url = "https://api.themoviedb.org/3"
+
+        self.image_base_url = "https://image.tmdb.org/t/p/w500"
+
+        # =========================================
+        # SESSION WITH RETRIES
+        # =========================================
+
+        self.session = requests.Session()
+
+        retries = Retry(
+            total=5,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504]
         )
 
-        self.base_url = (
-            "https://api.themoviedb.org/3"
-        )
+        adapter = HTTPAdapter(max_retries=retries)
 
-        self.image_base_url = (
-            "https://image.tmdb.org/t/p/w500"
-        )
+        self.session.mount("https://", adapter)
 
     # =====================================================
     # GET MOVIE DETAILS
     # =====================================================
 
-    def get_movie_details(
-        self,
-        tmdbid
-    ):
+    def get_movie_details(self, tmdbid):
 
-        url = (
-            f"{self.base_url}/movie/{tmdbid}"
-        )
+        try:
 
-        params = {
+            url = f"{self.base_url}/movie/{tmdbid}"
 
-            "api_key": self.api_key
-        }
-
-        response = requests.get(
-            url,
-            params=params
-        )
-
-        data = response.json()
-
-        poster = None
-        backdrop = None
-
-        if data.get("poster_path"):
-
-            poster = (
-                self.image_base_url
-                + data["poster_path"]
+            response = self.session.get(
+                url,
+                params={
+                    "api_key": self.api_key
+                },
+                timeout=15
             )
 
-        if data.get("backdrop_path"):
+            response.raise_for_status()
 
-            backdrop = (
-                self.image_base_url
-                + data["backdrop_path"]
-            )
+            data = response.json()
 
-        return {
+            poster = None
+            backdrop = None
 
-            "overview":
-            data.get("overview"),
+            if data.get("poster_path"):
 
-            "poster":
-            poster,
+                poster = (
+                    self.image_base_url +
+                    data["poster_path"]
+                )
 
-            "backdrop":
-            backdrop,
+            if data.get("backdrop_path"):
 
-            "runtime":
-            data.get("runtime"),
+                backdrop = (
+                    self.image_base_url +
+                    data["backdrop_path"]
+                )
 
-            "rating":
-            data.get("vote_average"),
+            return {
 
-            "release_date":
-            data.get("release_date")
-        }
+                "overview":
+                data.get("overview"),
+
+                "poster":
+                poster,
+
+                "backdrop":
+                backdrop,
+
+                "runtime":
+                data.get("runtime"),
+
+                "rating":
+                data.get("vote_average"),
+
+                "release_date":
+                data.get("release_date"),
+
+                "title":
+                data.get("title")
+            }
+
+        except Exception as e:
+
+            print("DETAILS ERROR:", e)
+
+            return {}
 
     # =====================================================
     # GET MOVIE CAST
@@ -94,24 +113,25 @@ class TMDBFetcher:
 
         try:
 
-            url = (
-                f"{self.base_url}/movie/{tmdbid}/credits"
-            )
+            url = f"{self.base_url}/movie/{tmdbid}/credits"
 
-            params = {
-                "api_key": self.api_key
-            }
-
-            response = requests.get(
+            response = self.session.get(
                 url,
-                params=params
+                params={
+                    "api_key": self.api_key
+                },
+                timeout=15
             )
+
+            response.raise_for_status()
 
             data = response.json()
 
             cast_data = []
 
             for actor in data.get("cast", [])[:10]:
+
+                profile_path = actor.get("profile_path")
 
                 cast_data.append({
 
@@ -122,119 +142,59 @@ class TMDBFetcher:
                     actor.get("character"),
 
                     "profile":
-                    self.image_base_url +
-                    str(actor.get("profile_path"))
+                    self.image_base_url + profile_path
+                    if profile_path else None
                 })
 
             return cast_data
 
         except Exception as e:
 
-            return {
-                "error": str(e)
-            }
+            print("CAST ERROR:", e)
+
+            return []
 
     # =====================================================
-    # SEARCH ACTOR
+    # GET MOVIE VIDEOS
     # =====================================================
 
-    def search_actor(self, name):
+    def get_movie_videos(self, tmdbid):
 
         try:
 
-            url = (
-                f"{self.base_url}/search/person"
-            )
+            url = f"{self.base_url}/movie/{tmdbid}/videos"
 
-            params = {
-
-                "api_key": self.api_key,
-
-                "query": name
-            }
-
-            response = requests.get(
+            response = self.session.get(
                 url,
-                params=params
+                params={
+                    "api_key": self.api_key
+                },
+                timeout=15
             )
+
+            response.raise_for_status()
 
             data = response.json()
 
-            if len(data["results"]) == 0:
+            videos = []
 
-                return {}
+            for video in data.get("results", []):
 
-            actor = data["results"][0]
+                if video.get("site") == "YouTube":
 
-            return {
+                    videos.append({
 
-                "id":
-                actor.get("id"),
+                        "name":
+                        video.get("name"),
 
-                "name":
-                actor.get("name"),
+                        "key":
+                        video.get("key")
+                    })
 
-                "profile":
-                self.image_base_url +
-                str(actor.get("profile_path")),
-
-                "known_for":
-                actor.get("known_for_department")
-            }
+            return videos
 
         except Exception as e:
 
-            return {
-                "error": str(e)
-            }
+            print("VIDEO ERROR:", e)
 
-    # =====================================================
-    # GET ACTOR MOVIES
-    # =====================================================
-
-    def get_actor_movies(self, person_id):
-
-        try:
-
-            url = (
-                f"{self.base_url}/person/{person_id}/movie_credits"
-            )
-
-            params = {
-                "api_key": self.api_key
-            }
-
-            response = requests.get(
-                url,
-                params=params
-            )
-
-            data = response.json()
-
-            movies = []
-
-            for movie in data.get("cast", [])[:20]:
-
-                movies.append({
-
-                    "title":
-                    movie.get("title"),
-
-                    "poster":
-                    self.image_base_url +
-                    str(movie.get("poster_path")),
-
-                    "rating":
-                    movie.get("vote_average"),
-
-                    "release_date":
-                    movie.get("release_date")
-                })
-
-            return movies
-
-        except Exception as e:
-
-            return {
-                "error": str(e)
-            }
+            return []

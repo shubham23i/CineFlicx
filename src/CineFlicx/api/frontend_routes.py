@@ -40,102 +40,48 @@ def movie_page(
     request: Request
 ):
 
-    prediction_pipeline = PredictionPipeline()
-
     tmdb = TMDBFetcher()
 
-    metadata = (
-        prediction_pipeline
-        .movie_recommender
-        .metadata
+    # =========================================
+    # FETCH MOVIE DETAILS
+    # =========================================
+
+    movie_details = (
+        tmdb.get_movie_details(movieid)
+        or {}
     )
 
-    movie = metadata[
-        metadata["movieid"] == movieid
-    ]
-
-    if movie.empty:
-
-        return templates.TemplateResponse(
-
-            "search.html",
-
-            {
-                "request": request,
-                "error": "Movie not found"
-            }
-        )
-
-    movie = movie.iloc[0]
-
-    tmdbid = int(movie["tmdbid"])
-
-    # =================================================
-    # TMDB DETAILS
-    # =================================================
-
-    details = (
-        tmdb.get_movie_details(tmdbid)
-    )
-
-    credits = (
-        tmdb.get_movie_cast(tmdbid)
-    )
+    # =========================================
+    # FETCH VIDEOS
+    # =========================================
 
     videos = (
-        tmdb.get_movie_videos(tmdbid)
+        tmdb.get_movie_videos(movieid)
+        or []
     )
 
-    movie_data = {
+    # =========================================
+    # FETCH CAST
+    # =========================================
 
-        "movieid":
-        movie["movieid"],
+    cast = (
+        tmdb.get_movie_cast(movieid)
+        or []
+    )
 
-        "title":
-        movie["title"],
-
-        "genres":
-        movie["genres"],
-
-        "tmdbid":
-        tmdbid,
-
-        "imdbid":
-        movie["imdbid"],
-
-        "overview":
-        details.get("overview"),
-
-        "poster":
-        details.get("poster"),
-
-        "backdrop":
-        details.get("backdrop"),
-
-        "runtime":
-        details.get("runtime"),
-
-        "rating":
-        details.get("rating"),
-
-        "release_date":
-        details.get("release_date"),
-
-        "cast":
-        credits.get("cast"),
-
-        "directors":
-        credits.get("directors"),
-
-        "videos":
-        videos
-    }
+    # =========================================
+    # RENDER TEMPLATE
+    # =========================================
 
     return templates.TemplateResponse(
-    request=request,
-    name="index.html",
-    context={}
-)
+        request=request,
+        name="movie.html",
+        context={
+            "movie": movie_details,
+            "videos": videos,
+            "cast": cast
+        }
+    )
 
 # =====================================================
 # SEARCH PAGE
@@ -174,12 +120,16 @@ def search_movie(
 
             details = (
                 tmdb.get_movie_details(tmdbid)
+                or {}
             )
 
             enriched_movies.append({
 
                 "movieid":
                 movie["movieid"],
+
+                "tmdbid":
+                tmdbid,
 
                 "title":
                 movie["title"],
@@ -196,14 +146,11 @@ def search_movie(
                 "overview":
                 details.get("overview")
             })
-
         except Exception as e:
 
-            print(e)
+            print("SEARCH ERROR:", e)
 
             continue
-
-    print(enriched_movies)
 
     return templates.TemplateResponse(
         request=request,
@@ -213,7 +160,6 @@ def search_movie(
             "query": movie_name
         }
     )
-
 # =====================================================
 # ACTOR PAGE
 # =====================================================

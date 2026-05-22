@@ -12,152 +12,334 @@
 
     <title>Search Results - CineFlicx</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=line-clamp"></script>
 
 </head>
 
-<body class="bg-black text-white min-h-screen">
+<body class="bg-black text-white min-h-screen overflow-x-hidden">
 
     <!-- ====================================== -->
     <!-- NAVBAR -->
     <!-- ====================================== -->
 
-    <nav class="flex items-center justify-between px-10 py-6 border-b border-gray-800">
+    <nav class="sticky top-0 z-50 bg-black/70 backdrop-blur-xl border-b border-gray-800">
 
-        <a
-            href="/"
-            class="text-4xl font-extrabold text-red-500"
-        >
-            CineFlicx
-        </a>
+        <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
 
-        <a
-            href="/"
-            class="text-gray-300 hover:text-red-400"
-        >
-            Home
-        </a>
+            <a
+                href="/"
+                class="text-4xl font-black text-red-500 tracking-tight hover:scale-105 transition duration-300"
+            >
+                CineFlicx
+            </a>
+
+            <a
+                href="/"
+                class="text-gray-300 hover:text-red-400 transition duration-300 font-medium"
+            >
+                Home
+            </a>
+
+        </div>
 
     </nav>
 
     <!-- ====================================== -->
-    <!-- HEADER -->
+    <!-- HERO -->
     <!-- ====================================== -->
 
-    <section class="px-10 py-10">
+    <section class="relative px-6 pt-12 pb-8">
 
-        <h1 class="text-5xl font-bold mb-4">
+        <!-- BACKGROUND GLOW -->
 
-            Results for:
-            <span class="text-red-500">
-                {{ query }}
-            </span>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-red-500/10 blur-3xl rounded-full"></div>
 
-        </h1>
+        <div class="relative z-10 max-w-7xl mx-auto">
 
-        <p class="text-gray-400 text-lg">
+            <!-- SEARCH BAR -->
 
-            AI-powered movie recommendations
+            <form
+                class="flex justify-center mb-12"
+                onsubmit="searchMovie(event)"
+            >
 
-        </p>
+                <div class="relative w-full max-w-3xl">
+
+                    <input
+                        id="movieSearch"
+                        type="text"
+                        placeholder="Search movies like Interstellar, Batman, Inception..."
+                        class="w-full px-7 py-5 rounded-full bg-gray-900/90 border border-gray-700 text-white text-lg outline-none focus:ring-2 focus:ring-red-500 transition duration-300 shadow-2xl"
+                    >
+
+                    <button
+                        type="submit"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 transition duration-300 px-6 py-2 rounded-full font-semibold shadow-lg"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+            </form>
+
+            <!-- TITLE -->
+
+            <div class="mb-10">
+
+                <h1 class="text-5xl md:text-6xl font-black leading-tight mb-4">
+
+                    Results for
+
+                    <span class="text-red-500">
+                        "{{ query }}"
+                    </span>
+
+                </h1>
+
+                <p class="text-gray-400 text-lg">
+
+                    AI-powered movie recommendations curated for you.
+
+                </p>
+
+            </div>
+
+        </div>
 
     </section>
 
     <!-- ====================================== -->
-    <!-- MOVIE GRID -->
+    <!-- LOADING SKELETON -->
     <!-- ====================================== -->
 
-    <section class="px-10 pb-20">
+    <section
+        id="loadingSkeleton"
+        class="hidden px-6 pb-20"
+    >
 
-        {% if movies %}
+        <div class="max-w-7xl mx-auto">
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
 
-            {% for movie in movies %}
+                {% for i in range(10) %}
 
-            <a
-                href="/movie/{{ movie['movieid'] }}"
-                class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:scale-105 transition duration-300"
-            >
+                <div class="animate-pulse bg-gray-900 rounded-3xl overflow-hidden border border-gray-800">
 
-                <!-- POSTER -->
+                    <!-- POSTER -->
 
-                {% if movie['poster'] %}
+                    <div class="w-full h-[420px] bg-gray-800"></div>
 
-                <img
-                    src="{{ movie['poster'] }}"
-                    alt="{{ movie['title'] }}"
-                    class="w-full h-[420px] object-cover"
-                >
+                    <!-- CONTENT -->
 
-                {% else %}
+                    <div class="p-5">
 
-                <div class="w-full h-[420px] bg-gray-800 flex items-center justify-center">
+                        <div class="h-5 bg-gray-700 rounded-lg w-3/4 mb-4"></div>
 
-                    <span class="text-gray-500">
-                        No Image
-                    </span>
+                        <div class="h-4 bg-gray-800 rounded-lg w-1/2 mb-5"></div>
 
-                </div>
+                        <div class="space-y-3">
 
-                {% endif %}
+                            <div class="h-3 bg-gray-800 rounded-lg"></div>
 
-                <!-- CONTENT -->
+                            <div class="h-3 bg-gray-800 rounded-lg w-5/6"></div>
 
-                <div class="p-4">
+                            <div class="h-3 bg-gray-800 rounded-lg w-2/3"></div>
 
-                    <h2 class="text-lg font-bold mb-2">
-
-                        {{ movie['title'] }}
-
-                    </h2>
-
-                    <p class="text-sm text-gray-400 mb-3 line-clamp-2">
-
-                        {{ movie['genres'] }}
-
-                    </p>
-
-                    <div class="flex items-center justify-between">
-
-                        <span class="text-yellow-400">
-
-                            ⭐ {{ movie['rating'] }}
-
-                        </span>
+                        </div>
 
                     </div>
 
                 </div>
 
-            </a>
+                {% endfor %}
 
-            {% endfor %}
-        </div>
-
-        {% else %}
-
-        <!-- NO RESULTS -->
-
-        <div class="flex flex-col items-center justify-center py-20">
-
-            <h2 class="text-3xl font-bold mb-4">
-
-                No recommendations found
-
-            </h2>
-
-            <p class="text-gray-400">
-
-                Try another movie name
-
-            </p>
+            </div>
 
         </div>
-
-        {% endif %}
 
     </section>
+
+    <!-- ====================================== -->
+    <!-- MOVIES -->
+    <!-- ====================================== -->
+
+    <section
+        id="moviesSection"
+        class="px-6 pb-24"
+    >
+
+        <div class="max-w-7xl mx-auto">
+
+            {% if movies %}
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+
+                {% for movie in movies %}
+
+                <a
+                    href="{% if movie.get('tmdbid') %}/movie/{{ movie.get('tmdbid') | int }}{% else %}#{% endif %}"
+                    class="group relative bg-gray-900 rounded-3xl overflow-hidden border border-gray-800 hover:border-red-500/40 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/10 transition duration-300"
+                >
+
+                    <!-- POSTER -->
+
+                    {% if movie.get('poster') and movie.get('poster') != 'None' %}
+
+                    <img
+                        src="{{ movie.get('poster') }}"
+                        alt="{{ movie.get('title') }}"
+                        loading="lazy"
+                        class="w-full h-[420px] object-cover group-hover:scale-110 transition duration-500"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                    >
+
+                    <!-- FALLBACK -->
+
+                    <div
+                        class="hidden w-full h-[420px] bg-gradient-to-br from-gray-800 to-gray-900 flex-col items-center justify-center"
+                    >
+
+                        <div class="text-7xl mb-4">
+                            🎬
+                        </div>
+
+                        <p class="text-gray-400 text-sm">
+                            Poster Not Available
+                        </p>
+
+                    </div>
+
+                    {% else %}
+
+                    <!-- FALLBACK -->
+
+                    <div
+                        class="w-full h-[420px] bg-gradient-to-br from-gray-800 to-gray-900 flex flex-col items-center justify-center"
+                    >
+
+                        <div class="text-7xl mb-4">
+                            🎬
+                        </div>
+
+                        <p class="text-gray-400 text-sm">
+                            Poster Not Available
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+                    <!-- OVERLAY -->
+
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+
+                    <!-- HOVER EFFECT -->
+
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/20 transition duration-300"></div>
+
+                    <!-- RATING -->
+
+                    <div class="absolute top-4 right-4 z-20">
+
+                        <div class="bg-black/80 backdrop-blur-md text-yellow-400 px-3 py-1 rounded-full text-sm font-bold border border-gray-700 shadow-xl">
+
+                            ⭐ {{ movie.get('rating', 'N/A') }}
+
+                        </div>
+
+                    </div>
+
+                    <!-- CONTENT -->
+
+                    <div class="absolute bottom-0 left-0 right-0 p-5 z-10">
+
+                        <h2 class="text-xl font-bold text-white mb-2 line-clamp-1">
+
+                            {{ movie.get('title', 'Unknown Title') }}
+
+                        </h2>
+
+                        <p class="text-sm text-gray-300 mb-3 line-clamp-1">
+
+                            {{ movie.get('genres', 'Unknown Genre') }}
+
+                        </p>
+
+                        <p class="text-xs text-gray-400 leading-relaxed line-clamp-3">
+
+                            {{ movie.get('overview', 'No overview available.') }}
+
+                        </p>
+
+                    </div>
+
+                </a>
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <!-- EMPTY STATE -->
+
+            <div class="flex flex-col items-center justify-center py-28 text-center">
+
+                <div class="text-8xl mb-6">
+                    🎥
+                </div>
+
+                <h2 class="text-4xl font-bold mb-4">
+
+                    No recommendations found
+
+                </h2>
+
+                <p class="text-gray-400 text-lg">
+
+                    Try searching another movie title.
+
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+    <!-- ====================================== -->
+    <!-- SCRIPT -->
+    <!-- ====================================== -->
+
+    <script>
+
+        function searchMovie(event) {
+
+            event.preventDefault();
+
+            const query = document
+                .getElementById("movieSearch")
+                .value
+                .trim();
+
+            if (!query) return;
+
+            document
+                .getElementById("moviesSection")
+                .classList.add("hidden");
+
+            document
+                .getElementById("loadingSkeleton")
+                .classList.remove("hidden");
+
+            window.location.href =
+                "/search/" + encodeURIComponent(query);
+        }
+
+    </script>
 
 </body>
 
