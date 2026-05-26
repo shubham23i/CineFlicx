@@ -10,21 +10,22 @@ from urllib3.util.retry import Retry
 load_dotenv()
 
 
-class TMDBFetcher:
-
+class TMDBFetcher:        
     def __init__(self):
+        self.api_key = os.getenv(
+            "TMDB_API_KEY"
+        )
+        self.base_url = (
+            "https://api.themoviedb.org/3"
+        )
 
-        self.api_key = os.getenv("TMDB_API_KEY")
-
-        self.base_url = "https://api.themoviedb.org/3"
-
-        self.image_base_url = "https://image.tmdb.org/t/p/w500"
-
-        # =========================================
-        # SESSION WITH RETRIES
-        # =========================================
+        self.image_base_url = (
+            "https://image.tmdb.org/t/p/w500"
+        )
 
         self.session = requests.Session()
+
+
 
         retries = Retry(
             total=5,
@@ -75,7 +76,19 @@ class TMDBFetcher:
                     data["backdrop_path"]
                 )
 
+            
             return {
+
+                "title":
+                data.get("title"),
+
+                "genres":
+                "|".join(
+                    [
+                        genre.get("name")
+                        for genre in data.get("genres", [])
+                    ]
+                ),
 
                 "overview":
                 data.get("overview"),
@@ -90,18 +103,72 @@ class TMDBFetcher:
                 data.get("runtime"),
 
                 "rating":
-                data.get("vote_average"),
+                round(
+                    data.get("vote_average", 0),
+                    1
+                ),
 
                 "release_date":
-                data.get("release_date"),
-
-                "title":
-                data.get("title")
+                data.get("release_date")
             }
+
+
 
         except Exception as e:
 
             print("DETAILS ERROR:", e)
+
+            return {}
+        
+
+    # =====================================================
+    # SEARCH MOVIE
+    # =====================================================
+
+    def search_movie(self, title):
+
+        try:
+
+            url = (
+                f"{self.base_url}/search/movie"
+            )
+
+            response = self.session.get(
+
+                url,
+
+                params={
+                    "api_key": self.api_key,
+                    "query": title
+                },
+
+                timeout=15
+            )
+
+            response.raise_for_status()
+
+            data = response.json()
+
+            results = data.get("results", [])
+
+            if len(results) == 0:
+
+                return {}
+
+            movie = results[0]
+
+            return {
+
+                "id":
+                movie.get("id"),
+
+                "title":
+                movie.get("title")
+            }
+
+        except Exception as e:
+
+            print("SEARCH MOVIE ERROR:", e)
 
             return {}
 

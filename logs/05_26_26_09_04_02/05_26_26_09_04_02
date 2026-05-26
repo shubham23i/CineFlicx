@@ -1,0 +1,1 @@
+[ 2026-05-26 09:12:24,460 ] 869 urllib3.connectionpool - WARNING - Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)': /3/search/movie?api_key=5a7a85e9b4be4025fd25acbc1d226f84&query=Batman+%281989%29

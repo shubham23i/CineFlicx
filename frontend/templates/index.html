@@ -12,171 +12,238 @@
 
     <title>CineFlicx</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=line-clamp"></script>
 
 </head>
 
-<body class="bg-black text-white min-h-screen">
+<body class="bg-black text-white overflow-x-hidden">
 
-    <!-- ======================================== -->
+    <!-- ===================================================== -->
+    <!-- BACKGROUND GLOW -->
+    <!-- ===================================================== -->
+
+    <div class="fixed inset-0 -z-10">
+
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-red-600/10 blur-3xl rounded-full"></div>
+
+        <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-red-500/10 blur-3xl rounded-full"></div>
+
+    </div>
+
+    <!-- ===================================================== -->
     <!-- NAVBAR -->
-    <!-- ======================================== -->
+    <!-- ===================================================== -->
 
-    <nav class="flex items-center justify-between px-10 py-6 border-b border-gray-800">
+    <nav class="sticky top-0 z-50 backdrop-blur-xl bg-black/70 border-b border-zinc-800">
 
-        <div>
+        <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between gap-6">
 
-            <h1 class="text-4xl font-extrabold text-red-500">
-                CineFlicx
-            </h1>
-
-            <p class="text-gray-400 text-sm mt-1">
-                AI Powered Movie Recommendation System
-            </p>
-
-        </div>
-
-        <div class="flex items-center gap-4">
+            <!-- LOGO -->
 
             <a
                 href="/"
-                class="hover:text-red-400 transition"
+                class="text-4xl font-black tracking-tight text-red-500 hover:scale-105 transition duration-300"
             >
-                Home
+                CineFlicx
             </a>
+
+            <!-- SEARCH BAR -->
+
+            <form
+                onsubmit="searchMovie(event)"
+                class="flex-1 max-w-3xl"
+            >
+
+                <div class="relative">
+
+                    <input
+                        id="movieSearch"
+                        type="text"
+                        placeholder="Search movies with AI..."
+                        class="w-full bg-zinc-900/90 border border-zinc-700 rounded-full px-7 py-4 pr-36 outline-none focus:ring-2 focus:ring-red-500 text-white text-lg shadow-2xl"
+                    >
+
+                    <button
+                        type="submit"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 px-6 py-2 rounded-full font-semibold transition duration-300"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+            </form>
+
+            <!-- SEMANTIC BUTTON -->
+
+            <button
+                type="button"
+                onclick="
+                    const q=document.getElementById('movieSearch').value.trim();
+                    if(q){
+                        window.location.href='/semantic/'+encodeURIComponent(q);
+                    } else {
+                        alert('Please enter a movie name');
+                    }
+                "
+                class="hidden md:flex items-center bg-zinc-900 border border-zinc-700 hover:border-purple-500 hover:bg-purple-500/10 px-5 py-3 rounded-full transition duration-300 font-semibold"
+            >
+                Semantic AI
+            </button>
+
+            <script>
+
+                function semanticSearch() {
+
+                    const query = document
+                        .getElementById("movieSearch")
+                        .value
+                        .trim();
+
+                    if (!query) return;
+
+                    window.location.href =
+                        "/semantic/" +
+                        encodeURIComponent(query);
+                }
+
+            </script>
 
         </div>
 
     </nav>
 
-    <!-- ======================================== -->
-    <!-- HERO SECTION -->
-    <!-- ======================================== -->
+    <!-- ===================================================== -->
+    <!-- HERO -->
+    <!-- ===================================================== -->
 
-    <section class="relative">
+    <section class="relative min-h-[85vh] flex items-center">
 
-        <div
-            class="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent z-10"
-        ></div>
+        <div class="max-w-7xl mx-auto px-6 w-full">
 
-        <img
-            src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop"
-            class="w-full h-[550px] object-cover opacity-50"
-        >
+            <div class="max-w-4xl animate-fade">
 
-        <div class="absolute z-20 top-0 left-0 w-full h-full flex flex-col justify-center px-12">
+                <div class="inline-flex items-center gap-3 bg-zinc-900/80 border border-zinc-800 rounded-full px-5 py-2 mb-8">
 
-            <h2 class="text-6xl font-bold max-w-3xl leading-tight">
+                    <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
 
-                Discover Movies You'll Actually Love
+                    <span class="text-zinc-300 text-sm">
+                        AI Powered Movie Recommendation Engine
+                    </span>
 
-            </h2>
+                </div>
 
-            <p class="mt-6 text-xl text-gray-300 max-w-2xl">
+                <h1 class="text-6xl md:text-8xl font-black leading-none mb-8">
 
-                Hybrid AI recommendations using collaborative filtering,
-                semantic embeddings, and TMDb metadata.
+                    Discover Movies
+                    <span class="text-red-500">
+                        Intelligently
+                    </span>
 
-            </p>
+                </h1>
 
-            <!-- SEARCH BOX -->
+                <p class="text-zinc-400 text-xl leading-relaxed max-w-3xl mb-12">
 
-            <div class="mt-10 flex gap-4 max-w-2xl">
+                    Explore cinematic recommendations powered by collaborative filtering,
+                    semantic AI search, TMDb enrichment, trailers, and intelligent movie matching.
 
-                <input
-                    id="movieInput"
-                    type="text"
-                    placeholder="Search movies like Interstellar..."
-                    class="w-full px-6 py-4 rounded-xl bg-gray-900 border border-gray-700 outline-none focus:border-red-500 text-lg"
+                </p>
+
+                <div class="flex flex-wrap gap-5">
+
+                    <button
+                        onclick="focusSearch()"
+                        class="bg-red-500 hover:bg-red-600 px-8 py-4 rounded-2xl font-bold text-lg transition duration-300 hover:scale-105 shadow-2xl shadow-red-500/20"
+                    >
+                        Start Exploring
+                    </button>
+
+                    <button
+                    type="button"
+                    onclick="
+                        const q=document.getElementById('movieSearch').value.trim();
+                        if(q){
+                            window.location.href='/semantic/'+encodeURIComponent(q);
+                        } else {
+                            alert('Please enter a movie name');
+                        }
+                    "
+                    class="hidden md:flex items-center bg-zinc-900 border border-zinc-700 hover:border-purple-500 hover:bg-purple-500/10 px-5 py-3 rounded-full transition duration-300 font-semibold"
                 >
-
-                <button
-                    onclick="searchMovie()"
-                    class="bg-red-600 hover:bg-red-700 px-8 py-4 rounded-xl text-lg font-semibold transition"
-                >
-                    Search
+                    Semantic AI
                 </button>
 
+                </div>
+
             </div>
 
         </div>
 
     </section>
 
-    <!-- ======================================== -->
+    <!-- ===================================================== -->
     <!-- FEATURES -->
-    <!-- ======================================== -->
+    <!-- ===================================================== -->
 
-    <section class="px-10 py-16">
+    <section class="pb-24">
 
-        <h2 class="text-3xl font-bold mb-10">
-            Features
-        </h2>
+        <div class="max-w-7xl mx-auto px-6">
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid md:grid-cols-3 gap-8">
 
-            <!-- Card 1 -->
+                <!-- CARD -->
 
-            <div class="bg-gray-900 rounded-2xl p-8 border border-gray-800">
+                <div class="bg-zinc-900/80 border border-zinc-800 rounded-3xl p-8 hover:border-red-500/40 hover:-translate-y-2 transition duration-300">
 
-                <div class="text-red-500 text-4xl mb-4">
-                    🎬
+                    <div class="text-5xl mb-6">
+                        🎬
+                    </div>
+
+                    <h2 class="text-2xl font-bold mb-4">
+                        Smart Recommendations
+                    </h2>
+
+                    <p class="text-zinc-400 leading-relaxed">
+                        Hybrid collaborative filtering recommends movies based on viewing similarity and intelligent ranking.
+                    </p>
+
                 </div>
 
-                <h3 class="text-2xl font-semibold mb-3">
-                    Hybrid Recommendations
-                </h3>
+                <!-- CARD -->
 
-                <p class="text-gray-400 leading-relaxed">
+                <div class="bg-zinc-900/80 border border-zinc-800 rounded-3xl p-8 hover:border-red-500/40 hover:-translate-y-2 transition duration-300">
 
-                    Combines collaborative filtering and semantic embeddings
-                    for highly accurate recommendations.
+                    <div class="text-5xl mb-6">
+                        🧠
+                    </div>
 
-                </p>
+                    <h2 class="text-2xl font-bold mb-4">
+                        Semantic AI Search
+                    </h2>
 
-            </div>
+                    <p class="text-zinc-400 leading-relaxed">
+                        Search using natural language like "mind bending sci-fi movies with emotional endings".
+                    </p>
 
-            <!-- Card 2 -->
-
-            <div class="bg-gray-900 rounded-2xl p-8 border border-gray-800">
-
-                <div class="text-red-500 text-4xl mb-4">
-                    🧠
                 </div>
 
-                <h3 class="text-2xl font-semibold mb-3">
-                    Semantic Search
-                </h3>
+                <!-- CARD -->
 
-                <p class="text-gray-400 leading-relaxed">
+                <div class="bg-zinc-900/80 border border-zinc-800 rounded-3xl p-8 hover:border-red-500/40 hover:-translate-y-2 transition duration-300">
 
-                    Search naturally using prompts like:
-                    "dark psychological thriller" or
-                    "space exploration sci-fi".
+                    <div class="text-5xl mb-6">
+                        🍿
+                    </div>
 
-                </p>
+                    <h2 class="text-2xl font-bold mb-4">
+                        Cinematic Experience
+                    </h2>
 
-            </div>
+                    <p class="text-zinc-400 leading-relaxed">
+                        Rich movie pages with cast, trailers, backdrop banners, ratings, and detailed metadata.
+                    </p>
 
-            <!-- Card 3 -->
-
-            <div class="bg-gray-900 rounded-2xl p-8 border border-gray-800">
-
-                <div class="text-red-500 text-4xl mb-4">
-                    ⚡
                 </div>
-
-                <h3 class="text-2xl font-semibold mb-3">
-                    Fast FAISS Retrieval
-                </h3>
-
-                <p class="text-gray-400 leading-relaxed">
-
-                    Uses vector similarity search powered by FAISS for
-                    ultra-fast movie discovery.
-
-                </p>
 
             </div>
 
@@ -184,132 +251,35 @@
 
     </section>
 
-    <!-- ======================================== -->
-    <!-- QUICK LINKS -->
-    <!-- ======================================== -->
-
-    <section class="px-10 pb-20">
-
-        <h2 class="text-3xl font-bold mb-8">
-            Explore
-        </h2>
-
-        <div class="flex flex-wrap gap-4">
-
-            <a
-                href="/search/Inception"
-                class="bg-gray-900 hover:bg-red-600 transition px-6 py-3 rounded-xl border border-gray-800"
-            >
-                Inception
-            </a>
-
-            <a
-                href="/search/Interstellar"
-                class="bg-gray-900 hover:bg-red-600 transition px-6 py-3 rounded-xl border border-gray-800"
-            >
-                Interstellar
-            </a>
-
-            <a
-                href="/search/The Dark Knight"
-                class="bg-gray-900 hover:bg-red-600 transition px-6 py-3 rounded-xl border border-gray-800"
-            >
-                The Dark Knight
-            </a>
-
-            <a
-                href="/search/Fight Club"
-                class="bg-gray-900 hover:bg-red-600 transition px-6 py-3 rounded-xl border border-gray-800"
-            >
-                Fight Club
-            </a>
-
-            <a
-                href="/actor/Leonardo DiCaprio"
-                class="bg-gray-900 hover:bg-red-600 transition px-6 py-3 rounded-xl border border-gray-800"
-            >
-                Leonardo DiCaprio
-            </a>
-
-        </div>
-
-    </section>
-
-    <!-- ======================================== -->
-    <!-- FOOTER -->
-    <!-- ======================================== -->
-
-    <footer class="border-t border-gray-800 py-8 px-10 text-gray-500">
-
-        <div class="flex flex-col md:flex-row justify-between gap-4">
-
-            <p>
-                © 2026 CineFlicx
-            </p>
-
-            <p>
-                Built with FastAPI, FAISS, Sentence Transformers & TMDb
-            </p>
-
-        </div>
-
-    </footer>
-
-    <!-- ======================================== -->
-    <!-- JS -->
-    <!-- ======================================== -->
+    <!-- ===================================================== -->
+    <!-- SCRIPT -->
+    <!-- ===================================================== -->
 
     <script>
 
-    async function searchMovie() {
+        function searchMovie(event) {
 
-        const query = document
-            .getElementById("movieInput")
-            .value
-            .trim()
+            event.preventDefault();
 
-        if (!query) return
+            const query = document
+                .getElementById("movieSearch")
+                .value
+                .trim();
 
-        // =========================================
-        // ACTOR KEYWORDS
-        // =========================================
-
-        const actorKeywords = [
-            "actor",
-            "actress",
-            "cast",
-            "director"
-        ]
-
-        const lowerQuery = query.toLowerCase()
-
-        // =========================================
-        // SIMPLE HEURISTIC
-        // =========================================
-
-        if (
-            lowerQuery.includes("leo") ||
-            lowerQuery.includes("dicaprio") ||
-            lowerQuery.includes("nolan") ||
-            actorKeywords.some(
-                keyword => lowerQuery.includes(keyword)
-            )
-        ) {
+            if (!query) return;
 
             window.location.href =
-                `/actor/${encodeURIComponent(query)}`
-
+                "/search/" + encodeURIComponent(query);
         }
 
-        else {
+        function focusSearch() {
 
-            window.location.href =
-                `/search/${encodeURIComponent(query)}`
-
+            document
+                .getElementById("movieSearch")
+                .focus();
         }
-    }
 
-</script>
+    </script>
 
 </body>
 

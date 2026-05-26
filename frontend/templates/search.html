@@ -14,67 +14,112 @@
 
     <script src="https://cdn.tailwindcss.com?plugins=line-clamp"></script>
 
+    <style>
+
+        @keyframes fadeUp {
+
+            from {
+
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-up {
+
+            animation: fadeUp 0.8s ease;
+        }
+
+    </style>
+
 </head>
 
-<body class="bg-black text-white min-h-screen overflow-x-hidden">
+<body class="bg-black text-white overflow-x-hidden">
 
-    <!-- ====================================== -->
+    <!-- ===================================================== -->
+    <!-- CINEMATIC BACKDROP -->
+    <!-- ===================================================== -->
+
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+
+        {% if movies and movies[0]['poster'] %}
+
+        <img
+            src="{{ movies[0]['poster'] }}"
+            class="w-full h-full object-cover blur-3xl scale-110 opacity-10"
+        >
+
+        {% endif %}
+
+        <div class="absolute inset-0 bg-black/90"></div>
+
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- RED GLOW -->
+    <!-- ===================================================== -->
+
+    <div class="fixed inset-0 -z-10">
+
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-red-600/20 blur-3xl rounded-full animate-pulse"></div>
+
+        <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-red-500/10 blur-3xl rounded-full"></div>
+
+    </div>
+
+    <!-- ===================================================== -->
     <!-- NAVBAR -->
-    <!-- ====================================== -->
+    <!-- ===================================================== -->
 
-    <nav class="sticky top-0 z-50 bg-black/70 backdrop-blur-xl border-b border-gray-800">
+    <nav class="sticky top-0 z-50 backdrop-blur-xl bg-black/60 border-b border-zinc-800">
 
-        <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between gap-6">
+
+            <!-- LOGO -->
 
             <a
                 href="/"
-                class="text-4xl font-black text-red-500 tracking-tight hover:scale-105 transition duration-300"
+                class="text-4xl font-black tracking-tight text-red-500 hover:scale-105 transition duration-300"
             >
                 CineFlicx
             </a>
 
-            <a
-                href="/"
-                class="text-gray-300 hover:text-red-400 transition duration-300 font-medium"
-            >
-                Home
-            </a>
-
-        </div>
-
-    </nav>
-
-    <!-- ====================================== -->
-    <!-- HERO -->
-    <!-- ====================================== -->
-
-    <section class="relative px-6 pt-12 pb-8">
-
-        <!-- BACKGROUND GLOW -->
-
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-red-500/10 blur-3xl rounded-full"></div>
-
-        <div class="relative z-10 max-w-7xl mx-auto">
-
-            <!-- SEARCH BAR -->
+            <!-- SEARCH -->
 
             <form
-                class="flex justify-center mb-12"
                 onsubmit="searchMovie(event)"
+                class="flex-1 max-w-3xl"
             >
 
-                <div class="relative w-full max-w-3xl">
+                <div class="relative">
 
                     <input
                         id="movieSearch"
                         type="text"
-                        placeholder="Search movies like Interstellar, Batman, Inception..."
-                        class="w-full px-7 py-5 rounded-full bg-gray-900/90 border border-gray-700 text-white text-lg outline-none focus:ring-2 focus:ring-red-500 transition duration-300 shadow-2xl"
+                        placeholder="Search movies with AI..."
+                        class="w-full
+                        bg-white/5
+                        backdrop-blur-xl
+                        border border-white/10
+                        rounded-full
+                        px-7 py-4 pr-36
+                        outline-none
+                        focus:ring-2
+                        focus:ring-red-500
+                        text-white text-lg
+                        shadow-2xl
+                        transition duration-300"
                     >
 
                     <button
                         type="submit"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 transition duration-300 px-6 py-2 rounded-full font-semibold shadow-lg"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 px-6 py-2 rounded-full font-semibold transition duration-300"
                     >
                         Search
                     </button>
@@ -83,76 +128,91 @@
 
             </form>
 
+            <!-- SEMANTIC BUTTON -->
+
+            <button
+                type="button"
+                onclick="semanticSearch()"
+                class="hidden md:flex items-center bg-zinc-900 border border-zinc-700 hover:border-purple-500 hover:bg-purple-500/10 px-5 py-3 rounded-full transition duration-300 font-semibold"
+            >
+                Semantic AI
+            </button>
+
+            <!-- HOME -->
+
+            <a
+                href="/"
+                class="text-zinc-300 hover:text-red-400 transition duration-300"
+            >
+                Home
+            </a>
+
+        </div>
+
+    </nav>
+
+    <!-- ===================================================== -->
+    <!-- HERO -->
+    <!-- ===================================================== -->
+
+    <section class="relative overflow-hidden border-b border-zinc-900">
+
+        <div class="relative z-10 max-w-7xl mx-auto px-6 py-20 animate-fade-up">
+
+            <!-- CATEGORY PILLS -->
+
+            <div class="flex flex-wrap gap-3 mb-8">
+
+                <span class="px-4 py-2 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-semibold">
+                    Semantic Search
+                </span>
+
+                <span class="px-4 py-2 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-300 text-sm font-semibold">
+                    AI Recommendations
+                </span>
+
+                <span class="px-4 py-2 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-300 text-sm font-semibold">
+                    Cinematic Discovery
+                </span>
+
+            </div>
+
             <!-- TITLE -->
 
-            <div class="mb-10">
+            <h1 class="text-5xl md:text-7xl font-black leading-tight mb-6">
 
-                <h1 class="text-5xl md:text-6xl font-black leading-tight mb-4">
+                AI-generated cinematic recommendations for
 
-                    Results for
+                <span class="text-red-500">
+                    "{{ query }}"
+                </span>
 
-                    <span class="text-red-500">
-                        "{{ query }}"
-                    </span>
+            </h1>
 
-                </h1>
+            <!-- DESCRIPTION -->
 
-                <p class="text-gray-400 text-lg">
+            <p class="text-zinc-400 text-xl max-w-3xl leading-relaxed mb-8">
 
-                    AI-powered movie recommendations curated for you.
+                Semantic matches powered by natural language understanding,
+                collaborative filtering, and intelligent movie embeddings.
 
-                </p>
+            </p>
 
-            </div>
+            <!-- EXAMPLES -->
 
-        </div>
+            <div class="flex flex-wrap gap-3">
 
-    </section>
+                <span class="px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-sm">
+                    dark psychological thriller
+                </span>
 
-    <!-- ====================================== -->
-    <!-- LOADING SKELETON -->
-    <!-- ====================================== -->
+                <span class="px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-sm">
+                    emotional space movie
+                </span>
 
-    <section
-        id="loadingSkeleton"
-        class="hidden px-6 pb-20"
-    >
-
-        <div class="max-w-7xl mx-auto">
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-
-                {% for i in range(10) %}
-
-                <div class="animate-pulse bg-gray-900 rounded-3xl overflow-hidden border border-gray-800">
-
-                    <!-- POSTER -->
-
-                    <div class="w-full h-[420px] bg-gray-800"></div>
-
-                    <!-- CONTENT -->
-
-                    <div class="p-5">
-
-                        <div class="h-5 bg-gray-700 rounded-lg w-3/4 mb-4"></div>
-
-                        <div class="h-4 bg-gray-800 rounded-lg w-1/2 mb-5"></div>
-
-                        <div class="space-y-3">
-
-                            <div class="h-3 bg-gray-800 rounded-lg"></div>
-
-                            <div class="h-3 bg-gray-800 rounded-lg w-5/6"></div>
-
-                            <div class="h-3 bg-gray-800 rounded-lg w-2/3"></div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {% endfor %}
+                <span class="px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-sm">
+                    mind bending sci-fi
+                </span>
 
             </div>
 
@@ -160,53 +220,37 @@
 
     </section>
 
-    <!-- ====================================== -->
+    <!-- ===================================================== -->
     <!-- MOVIES -->
-    <!-- ====================================== -->
+    <!-- ===================================================== -->
 
-    <section
-        id="moviesSection"
-        class="px-6 pb-24"
-    >
+    <section class="px-6 py-20">
 
         <div class="max-w-7xl mx-auto">
 
             {% if movies %}
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 animate-fade-up">
 
                 {% for movie in movies %}
 
                 <a
-                    href="{% if movie.get('tmdbid') %}/movie/{{ movie.get('tmdbid') | int }}{% else %}#{% endif %}"
-                    class="group relative bg-gray-900 rounded-3xl overflow-hidden border border-gray-800 hover:border-red-500/40 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/10 transition duration-300"
+                    href="/movie/{{ movie['tmdbid'] }}"
+                    class="group relative bg-zinc-900/80 backdrop-blur-xl rounded-3xl overflow-hidden border border-zinc-800 hover:border-red-500/40 hover:scale-105 hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-300"
                 >
 
                     <!-- POSTER -->
 
-                    {% if movie.get('poster') and movie.get('poster') != 'None' %}
+                    {% if movie['poster'] and movie['poster'] != 'None' %}
 
-                    <img
-                        src="{{ movie.get('poster') }}"
-                        alt="{{ movie.get('title') }}"
-                        loading="lazy"
-                        class="w-full h-[420px] object-cover group-hover:scale-110 transition duration-500"
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                    >
+                    <div class="overflow-hidden">
 
-                    <!-- FALLBACK -->
-
-                    <div
-                        class="hidden w-full h-[420px] bg-gradient-to-br from-gray-800 to-gray-900 flex-col items-center justify-center"
-                    >
-
-                        <div class="text-7xl mb-4">
-                            🎬
-                        </div>
-
-                        <p class="text-gray-400 text-sm">
-                            Poster Not Available
-                        </p>
+                        <img
+                            src="{{ movie['poster'] }}"
+                            alt="{{ movie['title'] }}"
+                            loading="lazy"
+                            class="w-full h-[420px] object-cover group-hover:scale-110 transition duration-500"
+                        >
 
                     </div>
 
@@ -214,16 +258,14 @@
 
                     <!-- FALLBACK -->
 
-                    <div
-                        class="w-full h-[420px] bg-gradient-to-br from-gray-800 to-gray-900 flex flex-col items-center justify-center"
-                    >
+                    <div class="w-full h-[420px] bg-gradient-to-br from-zinc-800 to-zinc-900 flex flex-col items-center justify-center">
 
-                        <div class="text-7xl mb-4">
+                        <div class="text-7xl mb-5 opacity-70">
                             🎬
                         </div>
 
-                        <p class="text-gray-400 text-sm">
-                            Poster Not Available
+                        <p class="text-zinc-500 text-sm font-medium">
+                            Poster Unavailable
                         </p>
 
                     </div>
@@ -232,19 +274,15 @@
 
                     <!-- OVERLAY -->
 
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-
-                    <!-- HOVER EFFECT -->
-
-                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/20 transition duration-300"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
 
                     <!-- RATING -->
 
                     <div class="absolute top-4 right-4 z-20">
 
-                        <div class="bg-black/80 backdrop-blur-md text-yellow-400 px-3 py-1 rounded-full text-sm font-bold border border-gray-700 shadow-xl">
+                        <div class="bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-zinc-700 text-yellow-400 text-sm font-bold">
 
-                            ⭐ {{ movie.get('rating', 'N/A') }}
+                            ⭐ {{ "%.1f"|format(movie['rating'] or 0) }}
 
                         </div>
 
@@ -254,21 +292,35 @@
 
                     <div class="absolute bottom-0 left-0 right-0 p-5 z-10">
 
-                        <h2 class="text-xl font-bold text-white mb-2 line-clamp-1">
+                        <!-- TITLE -->
 
-                            {{ movie.get('title', 'Unknown Title') }}
+                        <h2 class="text-xl font-bold text-white mb-3 line-clamp-1">
+
+                            {{ movie['title'] }}
 
                         </h2>
 
-                        <p class="text-sm text-gray-300 mb-3 line-clamp-1">
+                        <!-- GENRE PILLS -->
 
-                            {{ movie.get('genres', 'Unknown Genre') }}
+                        <div class="flex flex-wrap gap-2 mb-4">
 
-                        </p>
+                            {% for genre in movie['genres'].split('|')[:2] %}
 
-                        <p class="text-xs text-gray-400 leading-relaxed line-clamp-3">
+                            <span class="px-3 py-1 rounded-full bg-zinc-800/90 border border-zinc-700 text-xs text-zinc-300">
 
-                            {{ movie.get('overview', 'No overview available.') }}
+                                {{ genre }}
+
+                            </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                        <!-- OVERVIEW -->
+
+                        <p class="text-sm text-zinc-400 leading-relaxed line-clamp-3 min-h-[72px]">
+
+                            {{ movie['overview'] }}
 
                         </p>
 
@@ -284,21 +336,24 @@
 
             <!-- EMPTY STATE -->
 
-            <div class="flex flex-col items-center justify-center py-28 text-center">
+            <div class="flex flex-col items-center justify-center py-32 text-center animate-fade-up">
 
-                <div class="text-8xl mb-6">
+                <div class="text-8xl mb-8">
                     🎥
                 </div>
 
-                <h2 class="text-4xl font-bold mb-4">
+                <h2 class="text-5xl font-black mb-5">
 
-                    No recommendations found
+                    No cinematic matches found
 
                 </h2>
 
-                <p class="text-gray-400 text-lg">
+                <p class="text-zinc-500 text-lg max-w-xl leading-relaxed">
 
-                    Try searching another movie title.
+                    Try searching with natural language like
+                    "dark emotional sci-fi movie"
+                    or
+                    "mind bending thriller"
 
                 </p>
 
@@ -310,9 +365,9 @@
 
     </section>
 
-    <!-- ====================================== -->
+    <!-- ===================================================== -->
     <!-- SCRIPT -->
-    <!-- ====================================== -->
+    <!-- ===================================================== -->
 
     <script>
 
@@ -327,16 +382,22 @@
 
             if (!query) return;
 
-            document
-                .getElementById("moviesSection")
-                .classList.add("hidden");
-
-            document
-                .getElementById("loadingSkeleton")
-                .classList.remove("hidden");
-
             window.location.href =
                 "/search/" + encodeURIComponent(query);
+        }
+
+        function semanticSearch() {
+
+            const query = document
+                .getElementById("movieSearch")
+                .value
+                .trim();
+
+            if (!query) return;
+
+            window.location.href =
+                "/semantic/" +
+                encodeURIComponent(query);
         }
 
     </script>
@@ -344,3 +405,4 @@
 </body>
 
 </html>
+
