@@ -1,97 +1,256 @@
+
 {% extends "base.html" %}
 
 {% block content %}
 
-<div class="mb-10">
+<!-- ===================================================== -->
+<!-- BACKGROUND -->
+<!-- ===================================================== -->
 
-    <div class="flex gap-8 items-center">
+<div class="fixed inset-0 -z-20 bg-black">
 
-        <!-- ACTOR IMAGE -->
+    {% if actor.profile %}
 
-        <img
-            src="{{ actor.profile }}"
-            class="w-48 rounded-2xl shadow-2xl"
-        >
+    <img
+        src="{{ actor.profile }}"
+        class="w-full h-full object-cover blur-3xl scale-150 opacity-10"
+    >
 
-        <!-- ACTOR INFO -->
+    {% endif %}
 
-        <div>
-
-            <h1 class="text-5xl font-bold mb-4">
-
-                {{ actor.name }}
-
-            </h1>
-
-            <p class="text-zinc-400 text-xl">
-
-                {{ actor.known_for_department }}
-
-            </p>
-
-            <p class="mt-4">
-
-                Popularity Score:
-                {{ actor.popularity }}
-
-            </p>
-
-        </div>
-
-    </div>
+    <div class="absolute inset-0 bg-black/90"></div>
 
 </div>
 
-<!-- MOVIES -->
+<!-- RED GLOW -->
 
-<h2 class="text-3xl font-bold mb-6">
+<div class="fixed inset-0 -z-10 overflow-hidden">
 
-    Movies
+    <div class="absolute top-20 left-20 w-[500px] h-[500px] bg-red-500/10 blur-3xl rounded-full"></div>
 
-</h2>
+    <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-red-600/10 blur-3xl rounded-full"></div>
 
-<div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+</div>
 
-    {% for movie in movies %}
+<!-- ===================================================== -->
+<!-- ACTOR SECTION -->
+<!-- ===================================================== -->
 
-    <a href="#">
+<section class="relative px-6 py-16">
 
-        <div
-            class="bg-zinc-900 rounded-2xl overflow-hidden hover:scale-105 transition"
-        >
+    <div class="max-w-7xl mx-auto">
 
-            <img
-                src="{{ movie.poster }}"
-                class="h-80 w-full object-cover"
-            >
+        {% if actor %}
 
-            <div class="p-4">
+        <div class="grid lg:grid-cols-3 gap-14 items-start">
 
-                <h3 class="font-bold">
+            <!-- PROFILE -->
 
-                    {{ movie.title }}
+            <div>
 
-                </h3>
+                {% if actor.profile %}
 
-                <p class="text-zinc-400 text-sm">
+                <img
+                    src="{{ actor.profile }}"
+                    alt="{{ actor.name }}"
+                    class="w-full rounded-3xl shadow-2xl border border-zinc-800 hover:scale-[1.02] transition-all duration-300"
+                >
 
-                    ⭐ {{ movie.rating }}
+                {% else %}
 
-                </p>
+                <div class="w-full h-[650px] rounded-3xl bg-gradient-to-br from-zinc-800 to-zinc-900 flex flex-col items-center justify-center border border-zinc-800">
 
-                <p class="text-zinc-500 text-sm">
+                    <div class="text-8xl mb-6">
+                        👤
+                    </div>
 
-                    {{ movie.release_date }}
-                </p>
+                    <p class="text-zinc-400 text-xl">
+                        No Image Available
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            <!-- DETAILS -->
+
+            <div class="lg:col-span-2">
+
+                <div class="inline-flex items-center gap-3 bg-zinc-900/80 border border-zinc-800 rounded-full px-5 py-2 mb-8">
+
+                    <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+
+                    <span class="text-zinc-300 text-sm">
+                        Actor Profile
+                    </span>
+
+                </div>
+
+                <h1 class="text-6xl md:text-7xl font-black leading-tight mb-6">
+
+                    {{ actor.name }}
+
+                </h1>
+
+                <div class="flex flex-wrap gap-4 mb-10">
+
+                    <div class="bg-black/60 backdrop-blur-md border border-zinc-700 px-5 py-3 rounded-2xl shadow-xl">
+
+                        🎭 {{ actor.known_for }}
+
+                    </div>
+
+                </div>
+
+                <!-- ===================================================== -->
+                <!-- MOVIES -->
+                <!-- ===================================================== -->
+
+                <div class="mt-16">
+
+                    <div class="mb-10">
+
+                        <h2 class="text-4xl font-black mb-3">
+
+                            Known For
+
+                        </h2>
+
+                        <p class="text-zinc-400">
+
+                            Popular movies featuring {{ actor.name }}
+
+                        </p>
+
+                    </div>
+
+                    <!-- EDGE FADES -->
+
+                    <div class="relative">
+
+                        <div class="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none"></div>
+
+                        <div class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none"></div>
+
+                        <!-- MOVIE CAROUSEL -->
+
+                        <div class="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+
+                            {% for movie in movies %}
+
+                            <div class="min-w-[240px] max-w-[240px] snap-start bg-zinc-900/90 border border-zinc-800 rounded-3xl overflow-hidden hover:-translate-y-2 hover:border-red-500/40 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-300 flex-shrink-0">
+
+                                {% if movie.poster and movie.poster != 'None' %}
+
+                                <img
+                                    src="{{ movie.poster }}"
+                                    alt="{{ movie.title }}"
+                                    loading="lazy"
+                                    class="w-full h-[360px] object-cover"
+                                >
+
+                                {% else %}
+
+                                <div class="w-full h-[360px] bg-gradient-to-br from-zinc-800 to-zinc-900 flex flex-col items-center justify-center">
+
+                                    <div class="text-6xl mb-4">
+                                        🎬
+                                    </div>
+
+                                    <p class="text-zinc-400 text-sm">
+
+                                        Poster Unavailable
+
+                                    </p>
+
+                                </div>
+
+                                {% endif %}
+
+                                <div class="p-5">
+
+                                    <div class="flex items-center justify-between mb-3">
+
+                                        <div class="bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-sm font-bold border border-zinc-700">
+
+                                            ⭐ {{ movie.rating }}
+
+                                        </div>
+
+                                        <span class="text-zinc-500 text-sm">
+
+                                            {{ movie.release_date[:4] if movie.release_date else '' }}
+
+                                        </span>
+
+                                    </div>
+
+                                    <h3 class="font-bold text-lg line-clamp-2">
+
+                                        {{ movie.title }}
+
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
-    </a>
+        {% else %}
 
-    {% endfor %}
+        <div class="text-center py-32">
 
-</div>
+            <div class="text-8xl mb-8">
+                🎭
+            </div>
+
+            <h1 class="text-5xl font-black mb-6">
+
+                Actor Not Found
+
+            </h1>
+
+            <p class="text-zinc-400 text-xl">
+
+                We couldn't find information for this actor.
+
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+<style>
+
+.scrollbar-hide::-webkit-scrollbar {
+
+    display: none;
+}
+
+.scrollbar-hide {
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+</style>
 
 {% endblock %}
+

@@ -94,7 +94,14 @@ list_of_files = [
     "tests/__init__.py",
     "tests/test_api.py",
     "tests/test_recommender.py",
-    "main.py"
+    "main.py",
+    # ==========================================================
+    # DEPLOYMENT FILES
+    # ==========================================================
+
+    "render.yaml",
+    "runtime.txt",
+    ".gitignore",
 
 ]
 

@@ -39,6 +39,7 @@ class DataTransformation:
         try:
 
             with open(file_path, "wb") as file_obj:
+
                 pickle.dump(obj, file_obj)
 
         except Exception as e:
@@ -57,7 +58,7 @@ class DataTransformation:
             )
 
             # =====================================================
-            # LOAD VALIDATED CLEAN FILES
+            # LOAD VALIDATED FILES
             # =====================================================
 
             validated_dir = (
@@ -154,39 +155,13 @@ class DataTransformation:
                 how="left"
             )
 
-            logging.info(
-                "Metadata dataframe created"
-            )
-
-            # =====================================================
-            # HANDLE NULL TAGS
-            # =====================================================
-
             metadata_df["tag"] = (
                 metadata_df["tag"].fillna("")
             )
 
-            # =====================================================
-            # TITLE ↔ MOVIEID MAPPINGS
-            # =====================================================
-
-            title_to_movieid = dict(
-                zip(
-                    metadata_df["title"],
-                    metadata_df["movieid"]
-                )
-            )
-
-            movieid_to_title = dict(
-                zip(
-                    metadata_df["movieid"],
-                    metadata_df["title"]
-                )
-            )
-
             logging.info(
-                "Movie mappings created"
-            )
+                "Metadata dataframe created"
+            )            
 
             # =====================================================
             # CREATE COMBINED FEATURES
@@ -249,25 +224,101 @@ class DataTransformation:
             )
 
             # =====================================================
-            # CREATE MOVIE PIVOT
+            # KEEP ONLY POPULAR MOVIES
+            # =====================================================
+
+            metadata_df = metadata_df[
+                metadata_df["movieid"]
+                .isin(popular_movies)
+            ]
+
+            metadata_df = metadata_df.drop_duplicates(
+                subset="movieid"
+            )
+
+            metadata_df = metadata_df.reset_index(
+                drop=True
+            )
+
+            logging.info(
+                f"Filtered metadata shape: {metadata_df.shape}"
+            )
+            # =====================================================
+            # CREATE MAPPINGS
+            # =====================================================
+
+            title_to_movieid = dict(
+                zip(
+                    metadata_df["title"],
+                    metadata_df["movieid"]
+                )
+            )
+
+            movieid_to_title = dict(
+                zip(
+                    metadata_df["movieid"],
+                    metadata_df["title"]
+                )
+            )
+
+            logging.info(
+                "Movie mappings created"
+            )
+            # =====================================================
+            # CREATE PIVOT TABLE
             # =====================================================
 
             movie_pivot = filtered_ratings.pivot_table(
                 index="movieid",
                 columns="userid",
                 values="rating"
-            ).fillna(0)
+            )
+
+            movie_pivot = movie_pivot.fillna(0)
+
+            movie_pivot = movie_pivot.astype(
+                "float32"
+            )
 
             logging.info(
-                "Movie pivot created"
+                f"Movie pivot shape: {movie_pivot.shape}"
             )
 
             # =====================================================
-            # COSINE SIMILARITY
+            # LIMIT MOVIES FOR MEMORY OPTIMIZATION
+            # =====================================================
+
+            MAX_MOVIES = 20000
+
+            if len(movie_pivot) > MAX_MOVIES:
+
+                movie_popularity = (
+                    filtered_ratings["movieid"]
+                    .value_counts()
+                )
+
+                top_movies = movie_popularity.head(
+                    MAX_MOVIES
+                ).index
+
+                movie_pivot = movie_pivot.loc[
+                    movie_pivot.index.isin(top_movies)
+                ]
+
+                logging.info(
+                    f"Reduced movie pivot to top {MAX_MOVIES} movies"
+                )
+
+            # =====================================================
+            # CREATE SIMILARITY MATRIX
             # =====================================================
 
             similarity = cosine_similarity(
                 movie_pivot
+            )
+
+            similarity = similarity.astype(
+                "float32"
             )
 
             logging.info(
@@ -275,16 +326,78 @@ class DataTransformation:
             )
 
             # =====================================================
-            # SENTENCE TRANSFORMER EMBEDDINGS
+            # CREATE LIGHTWEIGHT RECOMMENDATION DICTIONARY
+            # =====================================================
+
+            TOP_K = 20
+
+            recommendation_dict = {}
+
+            movie_ids = movie_pivot.index.tolist()
+
+            for idx, movieid in enumerate(movie_ids):
+
+                similarity_scores = list(
+                    enumerate(similarity[idx])
+                )
+
+                similarity_scores = sorted(
+                    similarity_scores,
+                    key=lambda x: x[1],
+                    reverse=True
+                )[1: TOP_K + 1]
+
+                recommendations = []
+
+                for movie in similarity_scores:
+
+                    recommended_movieid = (
+                        movie_ids[movie[0]]
+                    )
+
+                    recommendations.append({
+                        "movieid": int(recommended_movieid),
+                        "score": float(movie[1])
+                    })
+
+                recommendation_dict[
+                    int(movieid)
+                ] = recommendations
+
+            logging.info(
+                "Recommendation dictionary created"
+            )
+
+            # =====================================================
+            # FREE HEAVY MEMORY
+            # =====================================================
+
+            del similarity
+            del movie_pivot
+
+            logging.info(
+                "Freed similarity matrix and pivot table memory"
+            )
+
+            # =====================================================
+            # CREATE EMBEDDINGS
             # =====================================================
 
             model = SentenceTransformer(
                 "all-MiniLM-L6-v2"
             )
 
+            MAX_EMBEDDING_MOVIES = 5000
+
+            metadata_df = metadata_df.iloc[
+                :MAX_EMBEDDING_MOVIES
+            ]
+
             embeddings = model.encode(
                 metadata_df["combined_features"].tolist(),
-                show_progress_bar=True
+                batch_size=32,
+                show_progress_bar=True,
+                convert_to_numpy=True
             )
 
             embeddings = np.array(
@@ -302,7 +415,11 @@ class DataTransformation:
 
             dimension = embeddings.shape[1]
 
-            faiss_index = faiss.IndexFlatL2(
+            faiss.normalize_L2(
+                embeddings
+            )
+
+            faiss_index = faiss.IndexFlatIP(
                 dimension
             )
 
@@ -316,87 +433,73 @@ class DataTransformation:
 
             # =====================================================
             # CREATE OUTPUT DIRECTORY
-            # =====================================================
+            # =====================================================           
 
-            transformed_dir = (
-                self.transformation_config
-                .transformed_data_directory
+            production_dir = os.path.join(
+                self.transformation_config.transformed_data_directory,
+                "production"
             )
 
             os.makedirs(
-                transformed_dir,
+                production_dir,
                 exist_ok=True
             )
+            
 
             # =====================================================
-            # SAVE ARTIFACTS
+            # SAVE PRODUCTION ARTIFACTS
             # =====================================================
 
-            # metadata.pkl
             self.save_pickle_object(
                 os.path.join(
-                    transformed_dir,
+                    production_dir,
                     "metadata.pkl"
                 ),
                 metadata_df
             )
 
-            # movie_pivot.pkl
             self.save_pickle_object(
                 os.path.join(
-                    transformed_dir,
-                    "movie_pivot.pkl"
+                    production_dir,
+                    "recommendation_dict.pkl"
                 ),
-                movie_pivot
+                recommendation_dict
             )
 
-            # similarity.pkl
             self.save_pickle_object(
                 os.path.join(
-                    transformed_dir,
-                    "similarity.pkl"
-                ),
-                similarity
-            )
-
-            # title_to_movieid.pkl
-            self.save_pickle_object(
-                os.path.join(
-                    transformed_dir,
+                    production_dir,
                     "title_to_movieid.pkl"
                 ),
                 title_to_movieid
             )
 
-            # movieid_to_title.pkl
             self.save_pickle_object(
                 os.path.join(
-                    transformed_dir,
+                    production_dir,
                     "movieid_to_title.pkl"
                 ),
                 movieid_to_title
             )
 
-            # embeddings.npy
             np.save(
                 os.path.join(
-                    transformed_dir,
+                    production_dir,
                     "embeddings.npy"
                 ),
                 embeddings
             )
 
-            # faiss.index
             faiss.write_index(
                 faiss_index,
                 os.path.join(
-                    transformed_dir,
+                    production_dir,
                     "faiss.index"
                 )
             )
 
             logging.info(
-                "All transformation artifacts saved successfully"
+                "Production artifacts saved successfully"
             )
 
             logging.info(
@@ -405,11 +508,11 @@ class DataTransformation:
 
             return (
                 metadata_df,
-                movie_pivot,
-                similarity,
+                recommendation_dict,
                 embeddings,
                 faiss_index
             )
 
         except Exception as e:
             raise CustomException(e, sys)
+        

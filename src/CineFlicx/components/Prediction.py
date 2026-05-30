@@ -1,3 +1,4 @@
+from difflib import get_close_matches
 import os
 import sys
 import pickle
@@ -27,8 +28,13 @@ class MovieRecommender:
                 app_config.get_prediction_pipeline_config()
             )
 
-            transformed_dir = (
-                self.config.transformed_data_directory
+            # =================================================
+            # PRODUCTION ARTIFACT DIRECTORY
+            # =================================================
+
+            transformed_dir = os.path.join(
+                self.config.transformed_data_directory,
+                "production"
             )
 
             # =================================================
@@ -43,38 +49,28 @@ class MovieRecommender:
                 "rb"
             ) as file_obj:
 
-                self.metadata = pickle.load(file_obj)
+                self.metadata = pickle.load(
+                    file_obj
+                )
 
             # =================================================
-            # LOAD MOVIE PIVOT
-            # =================================================
-
-            with open(
-                os.path.join(
-                    transformed_dir,
-                    self.config.movie_pivot_file
-                ),
-                "rb"
-            ) as file_obj:
-
-                self.movie_pivot = pickle.load(file_obj)
-
-            # =================================================
-            # LOAD SIMILARITY MATRIX
+            # LOAD PRECOMPUTED RECOMMENDATIONS
             # =================================================
 
             with open(
                 os.path.join(
                     transformed_dir,
-                    self.config.similarity_file
+                    "recommendation_dict.pkl"
                 ),
                 "rb"
             ) as file_obj:
 
-                self.similarity = pickle.load(file_obj)
+                self.recommendation_dict = (
+                    pickle.load(file_obj)
+                )
 
             # =================================================
-            # LOAD MAPPINGS
+            # LOAD TITLE TO MOVIEID
             # =================================================
 
             with open(
@@ -85,7 +81,13 @@ class MovieRecommender:
                 "rb"
             ) as file_obj:
 
-                self.title_to_movieid = pickle.load(file_obj)
+                self.title_to_movieid = (
+                    pickle.load(file_obj)
+                )
+
+            # =================================================
+            # LOAD MOVIEID TO TITLE
+            # =================================================
 
             with open(
                 os.path.join(
@@ -95,7 +97,9 @@ class MovieRecommender:
                 "rb"
             ) as file_obj:
 
-                self.movieid_to_title = pickle.load(file_obj)
+                self.movieid_to_title = (
+                    pickle.load(file_obj)
+                )
 
             # =================================================
             # LOAD EMBEDDINGS
@@ -120,7 +124,7 @@ class MovieRecommender:
             )
 
             # =================================================
-            # LOAD SENTENCE TRANSFORMER
+            # LOAD SENTENCE TRANSFORMER MODEL
             # =================================================
 
             self.model = SentenceTransformer(
@@ -128,11 +132,14 @@ class MovieRecommender:
             )
 
             logging.info(
-                "Movie Recommender initialized"
+                "Movie Recommender initialized successfully"
             )
 
         except Exception as e:
             raise CustomException(e, sys)
+        
+
+        
 
     # =====================================================
     # FORMAT OUTPUT
@@ -170,10 +177,7 @@ class MovieRecommender:
     # GET MOVIE METADATA
     # =====================================================
 
-    def get_movie_metadata(
-        self,
-        movieids
-    ):
+    def get_movie_metadata(self, movieids):
 
         try:
 
@@ -204,64 +208,88 @@ class MovieRecommender:
 
         try:
 
+            movie_title = movie_title.strip().lower()
+
             matched_title = None
+
+            # ============================================
+            # EXACT MATCH (IGNORE YEAR)
+            # ============================================
 
             for title in self.title_to_movieid.keys():
 
-                if movie_title.lower() in title.lower():
+                clean_title = (
+                    title.rsplit("(", 1)[0]
+                    .strip()
+                    .lower()
+                )
+
+                if clean_title == movie_title:
 
                     matched_title = title
                     break
 
+            # ============================================
+            # FUZZY MATCH
+            # ============================================
+
             if matched_title is None:
 
+                cleaned_titles = {}
+
+                for title in self.title_to_movieid.keys():
+
+                    clean_title = (
+                        title.rsplit("(", 1)[0]
+                        .strip()
+                    )
+
+                    cleaned_titles[clean_title] = title
+
+                matches = get_close_matches(
+                    movie_title,
+                    [x.lower() for x in cleaned_titles.keys()],
+                    n=1,
+                    cutoff=0.7
+                )
+
+                if matches:
+
+                    matched_clean = matches[0]
+
+                    for clean_title, original_title in cleaned_titles.items():
+
+                        if clean_title.lower() == matched_clean:
+
+                            matched_title = original_title
+                            break
+
+            if matched_title is None:
                 return []
 
-            movieid = (
-                self.title_to_movieid[matched_title]
-            )
-            if movieid not in self.movie_pivot.index:
+            movieid = self.title_to_movieid[matched_title]
 
-                return {
-                    "error": "Movie not present in pivot"
-                }
-
-            movie_index = (
-                self.movie_pivot.index
-                .get_loc(movieid)
+            recommendations = self.recommendation_dict.get(
+                movieid,
+                []
             )
 
-            similarity_scores = list(
-                enumerate(
-                    self.similarity[movie_index]
-                )
-            )
+            if len(recommendations) == 0:
+                return []
 
-            similarity_scores = sorted(
-                similarity_scores,
-                key=lambda x: x[1],
-                reverse=True
-            )
+            recommended_movieids = [
 
-            recommendations = (
-                similarity_scores[1: top_k + 1]
-            )
+                rec["movieid"]
 
-            recommended_movieids = []
-
-            for movie in recommendations:
-
-                recommended_movieids.append(
-                    self.movie_pivot.index[
-                        movie[0]
-                    ]
-                )
+                for rec in recommendations[:top_k]
+            ]
 
             return self.get_movie_metadata(
                 recommended_movieids
             )
 
         except Exception as e:
+
             raise CustomException(e, sys)
 
     # =====================================================
@@ -277,13 +305,26 @@ class MovieRecommender:
         try:
 
             query_embedding = self.model.encode(
-                [query]
+                [query],
+                convert_to_numpy=True
             )
 
             query_embedding = np.array(
                 query_embedding,
                 dtype="float32"
             )
+
+            # =================================================
+            # NORMALIZE FOR COSINE SIMILARITY
+            # =================================================
+
+            faiss.normalize_L2(
+                query_embedding
+            )
+
+            # =================================================
+            # SEARCH FAISS
+            # =================================================
 
             distances, indices = (
                 self.faiss_index.search(
@@ -338,6 +379,10 @@ class MovieRecommender:
                 + semantic_results
             )
 
+            # =================================================
+            # REMOVE DUPLICATES
+            # =================================================
+
             unique_movies = {}
 
             for movie in combined_results:
@@ -354,3 +399,4 @@ class MovieRecommender:
 
         except Exception as e:
             raise CustomException(e, sys)
+        

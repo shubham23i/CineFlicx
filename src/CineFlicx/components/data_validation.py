@@ -35,7 +35,7 @@ class DataValidation:
 
             ingested_dir = os.path.join(
                 self.ingestion_config.ingested_directory,
-                "ml-latest-small"
+                "ml-latest"
             )
 
             # ---------------------------------------------------

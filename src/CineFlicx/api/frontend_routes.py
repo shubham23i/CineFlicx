@@ -10,8 +10,6 @@ from src.CineFlicx.pipelines.prediction_pipeline import (
 from src.CineFlicx.components.tmdb_fetcher import (
     TMDBFetcher
 )
-
-import pandas as pd
 from src.CineFlicx.recommender.semantic_search import ( SemanticSearch )
 frontend_router = APIRouter()
 
@@ -63,6 +61,19 @@ def movie_page(
         or {}
     )
 
+    if not movie_details:
+
+        return templates.TemplateResponse(
+            request=request,
+            name="movie.html",
+            context={
+                "movie": {},
+                "videos": [],
+                "cast": [],
+                "recommendations": []
+            }
+        )
+
     # =====================================================
     # VIDEOS
     # =====================================================
@@ -82,18 +93,48 @@ def movie_page(
     )
 
     # =====================================================
-    # MORE LIKE THIS
+    # RECOMMENDATIONS
     # =====================================================
 
     prediction_pipeline = PredictionPipeline()
 
+    movie_title = movie_details.get(
+        "title",
+        ""
+    )
+
     recommendations = (
         prediction_pipeline
         .collaborative_pipeline(
-            movie_title=movie_details.get("title"),
+            movie_title=movie_title,
             top_k=10
         )
     )
+
+
+    # =====================================================
+    # FALLBACK TO SEMANTIC SEARCH
+    # =====================================================
+
+    if len(recommendations) == 0:
+
+        try:
+
+            recommendations = (
+                prediction_pipeline
+                .semantic_pipeline(
+                    query=movie_title,
+                    top_k=10
+                )
+            )
+
+        except Exception as e:
+
+            recommendations = []
+
+    # =====================================================
+    # ENRICH RECOMMENDATIONS
+    # =====================================================
 
     enriched_recommendations = []
 
@@ -101,19 +142,48 @@ def movie_page(
 
         try:
 
-            tmdbid = movie.get("tmdbid")
+            tmdbid = movie.get(
+                "tmdbid"
+            )
 
-            if not tmdbid:
-                continue
+            # =============================================
+            # FALLBACK SEARCH BY TITLE
+            # =============================================
 
-            tmdbid = int(float(tmdbid))
+            if (
+                tmdbid is None
+                or str(tmdbid) == "nan"
+            ):
+
+                search_result = (
+                    tmdb.search_movie(
+                        movie.get("title")
+                    )
+                )
+
+                if not search_result:
+
+                    continue
+
+                tmdbid = search_result["id"]
+
+            else:
+
+                tmdbid = int(
+                    float(tmdbid)
+                )
 
             details = (
-                tmdb.get_movie_details(tmdbid)
+                tmdb.get_movie_details(
+                    tmdbid
+                )
                 or {}
             )
 
             enriched_recommendations.append({
+
+                "movieid":
+                movie.get("movieid"),
 
                 "tmdbid":
                 tmdbid,
@@ -122,26 +192,46 @@ def movie_page(
                 movie.get("title"),
 
                 "genres":
-                movie.get("genres", ""),
+                movie.get(
+                    "genres",
+                    ""
+                ),
 
                 "poster":
-                details.get("poster"),
+                details.get(
+                    "poster"
+                ),
 
                 "overview":
-                details.get("overview"),
+                details.get(
+                    "overview"
+                ),
 
                 "rating":
-                details.get("rating", 0),
+                details.get(
+                    "rating",
+                    0
+                ),
 
                 "match":
-                95 - len(enriched_recommendations) * 3
+                max(
+                    70,
+                    95 - (
+                        len(
+                            enriched_recommendations
+                        ) * 3
+                    )
+                )
             })
 
         except Exception as e:
 
-            print("RECOMMENDATION ERROR:", e)
-
             continue
+
+
+    # =====================================================
+    # RENDER PAGE
+    # =====================================================
 
     return templates.TemplateResponse(
         request=request,
@@ -228,9 +318,6 @@ def search_movie(
                 details.get("overview")
             })
         except Exception as e:
-
-            print("SEARCH ERROR:", e)
-
             continue
 
     return templates.TemplateResponse(
@@ -306,9 +393,6 @@ def semantic_search(
             })
 
         except Exception as e:
-
-            print(e)
-
             continue
 
     return templates.TemplateResponse(
@@ -328,6 +412,7 @@ def semantic_search(
     )
 
 
+
 # =====================================================
 # ACTOR PAGE
 # =====================================================
@@ -340,28 +425,47 @@ def actor_page(
 
     tmdb = TMDBFetcher()
 
+    # =========================================
+    # SEARCH ACTOR
+    # =========================================
+
     actor = tmdb.search_actor(actor_name)
 
     if not actor:
 
         return templates.TemplateResponse(
-
-            "actor.html",
-
-            {
-                "request": request,
+            request=request,
+            name="actor.html",
+            context={
                 "error": "Actor not found"
             }
         )
+
+    # =========================================
+    # ACTOR MOVIES
+    # =========================================
 
     movies = (
         tmdb.get_actor_movies(
             actor["id"]
         )
+        or []
     )
 
+    # =========================================
+    # RENDER PAGE
+    # =========================================
+
     return templates.TemplateResponse(
-    request=request,
-    name="index.html",
-    context={}
-)
+        request=request,
+        name="actor.html",
+        context={
+
+            "actor":
+            actor,
+
+            "movies":
+            movies
+        }
+    )
+

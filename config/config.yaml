@@ -3,7 +3,7 @@ artifacts_config:
 
 
 data_ingestion_config:
-  dataset_download_url: https://files.grouplens.org/datasets/movielens/ml-latest-small.zip
+  dataset_download_url: https://files.grouplens.org/datasets/movielens/ml-latest.zip
   dataset_directory: dataset
   ingested_directory: ingested
   raw_data_directory: raw_data
@@ -15,8 +15,8 @@ data_validation_config:
 
 data_transformation_config:
   transformed_data_directory: transformed_data
-  min_user_ratings_threshold: 50
-  min_movie_ratings_threshold: 20
+  min_user_ratings_threshold: 150
+  min_movie_ratings_threshold: 150
 
 
 file_names:

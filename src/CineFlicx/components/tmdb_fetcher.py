@@ -220,6 +220,131 @@ class TMDBFetcher:
             print("CAST ERROR:", e)
 
             return []
+        
+
+        # =====================================================
+    # SEARCH ACTOR
+    # =====================================================
+
+    def search_actor(self, actor_name):
+
+        try:
+
+            url = f"{self.base_url}/search/person"
+
+            response = self.session.get(
+                url,
+                params={
+                    "api_key": self.api_key,
+                    "query": actor_name
+                },
+                timeout=15
+            )
+
+            response.raise_for_status()
+
+            data = response.json()
+
+            results = data.get("results", [])
+
+            if len(results) == 0:
+                return None
+
+            actor = results[0]
+
+            profile = None
+
+            if actor.get("profile_path"):
+
+                profile = (
+                    self.image_base_url +
+                    actor["profile_path"]
+                )
+
+            return {
+
+                "id":
+                actor.get("id"),
+
+                "name":
+                actor.get("name"),
+
+                "profile":
+                profile,
+
+                "known_for":
+                actor.get("known_for_department")
+            }
+
+        except Exception as e:
+
+            print("ACTOR SEARCH ERROR:", e)
+
+            return None
+
+
+    # =====================================================
+    # GET ACTOR MOVIES
+    # =====================================================
+
+    def get_actor_movies(self, actor_id):
+
+        try:
+
+            url = (
+                f"{self.base_url}/person/{actor_id}/movie_credits"
+            )
+
+            response = self.session.get(
+                url,
+                params={
+                    "api_key": self.api_key
+                },
+                timeout=15
+            )
+
+            response.raise_for_status()
+
+            data = response.json()
+
+            movies = []
+
+            for movie in data.get("cast", [])[:20]:
+
+                poster = None
+
+                if movie.get("poster_path"):
+
+                    poster = (
+                        self.image_base_url +
+                        movie["poster_path"]
+                    )
+
+                movies.append({
+
+                    "title":
+                    movie.get("title"),
+
+                    "poster":
+                    poster,
+
+                    "rating":
+                    movie.get("vote_average"),
+
+                    "release_date":
+                    movie.get("release_date"),
+
+                    "tmdbid":
+                    movie.get("id")
+                })
+
+            return movies
+
+        except Exception as e:
+
+            print("ACTOR MOVIES ERROR:", e)
+
+            return []
 
     # =====================================================
     # GET MOVIE VIDEOS
