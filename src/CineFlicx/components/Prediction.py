@@ -4,9 +4,6 @@ import sys
 import pickle
 import numpy as np
 import faiss
-
-from sentence_transformers import SentenceTransformer
-
 from src.CineFlicx.configuration.configuration import (
     Configuration
 )
@@ -127,9 +124,7 @@ class MovieRecommender:
             # LOAD SENTENCE TRANSFORMER MODEL
             # =================================================
 
-            self.model = SentenceTransformer(
-                self.config.model_name
-            )
+            self.model = None
 
             logging.info(
                 "Movie Recommender initialized successfully"
